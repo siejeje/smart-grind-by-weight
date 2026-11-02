@@ -7,12 +7,12 @@ void PurgeConfirmScreen::create() {
     // Set width to 100% and height to exclude bottom 120px button area
     // This prevents the screen from blocking touch events to the buttons
     lv_obj_set_width(screen, LV_PCT(100));
-    lv_obj_set_height(screen, lv_display_get_vertical_resolution(lv_display_get_default()) - 120);
+    lv_obj_set_height(screen, lv_display_get_vertical_resolution(lv_display_get_default()) - (HW_UI_BUTTON_SIZE_PX + 20));
     lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(screen, 0, 0);
-    lv_obj_set_style_pad_top(screen, 6, 0);
-    lv_obj_set_style_pad_bottom(screen, 20, 0);  // Reduced padding since screen no longer covers buttons
+    lv_obj_set_style_pad_top(screen, 6 + UI_TOP_INSET_PX, 0);
+    lv_obj_set_style_pad_bottom(screen, UI_SY(20), 0);  // Reduced padding since screen no longer covers buttons
     lv_obj_set_style_pad_left(screen, 0, 0);
     lv_obj_set_style_pad_right(screen, 0, 0);
     lv_obj_set_style_pad_gap(screen, 5, 0);
@@ -25,7 +25,7 @@ void PurgeConfirmScreen::create() {
     // Title label
     title_label = lv_label_create(screen);
     lv_label_set_text(title_label, "Grinder Purged");
-    lv_obj_set_style_text_font(title_label, &lv_font_montserrat_36, 0);
+    lv_obj_set_style_text_font(title_label, UI_FONT_36, 0);
     lv_obj_set_style_text_color(title_label, lv_color_hex(THEME_COLOR_WARNING), 0);
     lv_obj_set_style_text_align(title_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_width(title_label, LV_PCT(100));
@@ -46,7 +46,7 @@ void PurgeConfirmScreen::create() {
     // Message label
     message_label = lv_label_create(message_container);
     lv_label_set_text(message_label, "Remove the purge grinds if desired.");
-    lv_obj_set_style_text_font(message_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(message_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(message_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(message_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_width(message_label, LV_PCT(90));
@@ -58,9 +58,9 @@ void PurgeConfirmScreen::create() {
     // Checkbox with label - 2x normal size
     checkbox = lv_checkbox_create(screen);
     lv_checkbox_set_text(checkbox, "Always keep");
-    lv_obj_set_style_text_font(checkbox, &lv_font_montserrat_32, 0);  // Larger font
+    lv_obj_set_style_text_font(checkbox, UI_FONT_32, 0);  // Larger font
     lv_obj_set_style_text_color(checkbox, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
-    lv_obj_set_width(checkbox, 260);  // Set max width to prevent overflow
+    lv_obj_set_width(checkbox, HW_UI_CONTENT_WIDTH_PX);  // Set max width to prevent overflow
 
     // Scale up the checkbox indicator to 2x size
     lv_obj_set_style_transform_scale(checkbox, 200, LV_PART_INDICATOR);  // 200 = 2.0x scale

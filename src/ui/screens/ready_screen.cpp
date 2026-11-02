@@ -6,7 +6,7 @@
 
 void ReadyScreen::create() {
     screen = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(screen, LV_PCT(100), LV_PCT(80));
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
     lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(screen, 0, 0);
@@ -71,12 +71,12 @@ void ReadyScreen::create_menu_page(lv_obj_t* parent) {
     lv_obj_set_layout(parent, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(parent, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_set_style_pad_gap(parent, 20, 0);
+    lv_obj_set_style_pad_gap(parent, UI_SY(20), 0);
 
     // Info label
     lv_obj_t* info_label = lv_label_create(parent);
     lv_label_set_text(info_label, "MAIN\nMENU");
-    lv_obj_set_style_text_font(info_label, &lv_font_montserrat_32, 0);
+    lv_obj_set_style_text_font(info_label, UI_FONT_32, 0);
     lv_obj_set_style_text_color(info_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(info_label, LV_TEXT_ALIGN_CENTER, 0);
 }

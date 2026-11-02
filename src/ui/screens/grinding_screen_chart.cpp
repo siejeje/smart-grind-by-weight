@@ -6,7 +6,7 @@
 
 void GrindingScreenChart::create() {
     screen = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(screen, LV_PCT(100), LV_PCT(80));
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
     lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0); // Keep transparent
     lv_obj_set_style_border_width(screen, 0, 0);
@@ -17,17 +17,17 @@ void GrindingScreenChart::create() {
     lv_obj_set_layout(screen, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(screen, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_set_style_pad_gap(screen, 15, 0);
+    lv_obj_set_style_pad_gap(screen, UI_SY(15), 0);
 
     // Profile name label
     profile_label = lv_label_create(screen);
     lv_label_set_text(profile_label, "DOUBLE");
-    lv_obj_set_style_text_font(profile_label, &lv_font_montserrat_32, 0);
+    lv_obj_set_style_text_font(profile_label, UI_FONT_32, 0);
     lv_obj_set_style_text_color(profile_label, lv_color_hex(THEME_COLOR_SECONDARY), 0);
 
     // Create chart - use full screen width
     chart = lv_chart_create(screen);
-    lv_obj_set_size(chart, LV_PCT(100), 140);
+    lv_obj_set_size(chart, LV_PCT(100), UI_CHART_HEIGHT_PX);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
     lv_chart_set_point_count(chart, MAX_CHART_POINTS);
     lv_chart_set_div_line_count(chart, 0, 0);  // No grid lines for clean look
@@ -96,12 +96,12 @@ void GrindingScreenChart::create() {
     
     // Create initial spans using correct API
     lv_span_t* current_span = lv_spangroup_add_span(weight_spangroup);
-    lv_style_set_text_font(lv_span_get_style(current_span), &lv_font_montserrat_56);
+    lv_style_set_text_font(lv_span_get_style(current_span), UI_FONT_56);
     lv_style_set_text_color(lv_span_get_style(current_span), lv_color_hex(THEME_COLOR_TEXT_PRIMARY));
     lv_span_set_text(current_span, "0.0g");
     
     lv_span_t* separator_span = lv_spangroup_add_span(weight_spangroup);
-    lv_style_set_text_font(lv_span_get_style(separator_span), &lv_font_montserrat_24);
+    lv_style_set_text_font(lv_span_get_style(separator_span), UI_FONT_24);
     lv_style_set_text_color(lv_span_get_style(separator_span), lv_color_hex(THEME_COLOR_TEXT_SECONDARY));
     lv_span_set_text(separator_span, " / 18.0g");
     

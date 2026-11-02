@@ -10,7 +10,7 @@ void style_as_button(lv_obj_t* object, int32_t width, int32_t height, const lv_f
     lv_obj_set_style_text_color(object, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_font(object, font, 0);
     lv_obj_set_style_border_width(object, 0, 0);
-    lv_obj_set_style_pad_hor(object, 20, 0);
+    lv_obj_set_style_pad_hor(object, UI_SX(20), 0);
     if (width >= 0){
         lv_obj_set_style_width(object, width, 0);
     }
@@ -74,12 +74,12 @@ lv_obj_t* create_profile_label(lv_obj_t* parent, lv_obj_t** profile_label, lv_ob
 
     *profile_label = lv_label_create(label_container);
     lv_label_set_text(*profile_label, "DOUBLE");
-    lv_obj_set_style_text_font(*profile_label, &lv_font_montserrat_32, 0);
+    lv_obj_set_style_text_font(*profile_label, UI_FONT_32, 0);
     lv_obj_set_style_text_color(*profile_label, lv_color_hex(THEME_COLOR_SECONDARY), 0);
     
     *weight_label = lv_label_create(label_container);
     lv_label_set_text(*weight_label, "18.0g");
-    lv_obj_set_style_text_font(*weight_label, &lv_font_montserrat_60, 0);
+    lv_obj_set_style_text_font(*weight_label, UI_FONT_60, 0);
     lv_obj_set_style_text_color(*weight_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
 
     return label_container;
@@ -111,8 +111,8 @@ lv_obj_t* create_data_label(lv_obj_t* parent, const char* name, lv_obj_t** value
     lv_obj_set_style_bg_opa(container, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(container, 0, 0);
     lv_obj_set_style_pad_all(container, 2, 0);
-    lv_obj_set_style_pad_left(container, 10, 0);
-    lv_obj_set_style_pad_right(container, 14, 0);
+    lv_obj_set_style_pad_left(container, UI_SX(10), 0);
+    lv_obj_set_style_pad_right(container, UI_SX(14), 0);
     lv_obj_set_style_margin_all(container, 0, 0);
     lv_obj_set_size(container, HW_UI_CONTENT_WIDTH_PX, LV_SIZE_CONTENT);
     lv_obj_clear_flag(container, LV_OBJ_FLAG_SCROLLABLE);
@@ -128,7 +128,7 @@ lv_obj_t* create_data_label(lv_obj_t* parent, const char* name, lv_obj_t** value
 
     lv_obj_t* name_label = lv_label_create(container);
     lv_label_set_text(name_label, name);
-    lv_obj_set_style_text_font(name_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(name_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(name_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     if (stacked) {
         lv_obj_set_width(name_label, LV_PCT(100));
@@ -137,7 +137,7 @@ lv_obj_t* create_data_label(lv_obj_t* parent, const char* name, lv_obj_t** value
 
     *value_label = lv_label_create(container);
     lv_label_set_text(*value_label, "");
-    lv_obj_set_style_text_font(*value_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(*value_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(*value_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     if (stacked) {
         lv_obj_set_width(*value_label, LV_PCT(100));
@@ -281,7 +281,7 @@ lv_obj_t* create_radio_button_group(
     // Create buttons
     for (int i = 0; i < option_count; i++) {
         lv_color_t color = (i == initial_selection) ? lv_color_hex(THEME_COLOR_PRIMARY) : lv_color_hex(THEME_COLOR_NEUTRAL);
-        data->buttons[i] = create_button(group_container, options[i], color, actual_button_width, button_height, &lv_font_montserrat_24);
+        data->buttons[i] = create_button(group_container, options[i], color, actual_button_width, button_height, UI_FONT_24);
         
         // Add event handler
         lv_obj_add_event_cb(data->buttons[i], radio_button_event_handler, LV_EVENT_CLICKED, nullptr);

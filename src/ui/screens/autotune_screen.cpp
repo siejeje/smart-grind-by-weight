@@ -19,25 +19,25 @@ void AutoTuneScreen::create() {
     // Title label (shared across all screens)
     title_label = lv_label_create(screen);
     lv_label_set_text(title_label, "Pulse Tune");
-    lv_obj_set_style_text_font(title_label, &lv_font_montserrat_36, 0);
+    lv_obj_set_style_text_font(title_label, UI_FONT_36, 0);
     lv_obj_set_style_text_color(title_label, lv_color_hex(THEME_COLOR_ACCENT), 0);
     lv_obj_set_style_text_align(title_label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(title_label, LV_ALIGN_TOP_MID, 0, 20);
+    lv_obj_align(title_label, LV_ALIGN_TOP_MID, 0, UI_TOP_INSET_PX > 0 ? UI_TOP_INSET_PX : 20);
 
     // === Console Screen ===
     console_container = lv_obj_create(screen);
-    lv_obj_set_size(console_container, HW_UI_CONTENT_WIDTH_PX, HW_DISPLAY_HEIGHT_PX - 116);
+    lv_obj_set_size(console_container, HW_UI_CONTENT_WIDTH_PX, HW_DISPLAY_HEIGHT_PX - UI_AUTOTUNE_CONSOLE_RESERVE_PX);
     lv_obj_set_style_bg_opa(console_container, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(console_container, 0, 0);
     lv_obj_set_style_pad_all(console_container, 0, 0);
     lv_obj_clear_flag(console_container, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_scrollbar_mode(console_container, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_align_to(console_container, title_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 15);
+    lv_obj_align_to(console_container, title_label, LV_ALIGN_OUT_BOTTOM_MID, 0, UI_SY(15));
 
     console_textarea = lv_textarea_create(console_container);
-    lv_obj_set_size(console_textarea, HW_UI_CONTENT_WIDTH_PX, HW_DISPLAY_HEIGHT_PX - 116);
+    lv_obj_set_size(console_textarea, HW_UI_CONTENT_WIDTH_PX, HW_DISPLAY_HEIGHT_PX - UI_AUTOTUNE_CONSOLE_RESERVE_PX);
     lv_textarea_set_text(console_textarea, "");
-    lv_obj_set_style_text_font(console_textarea, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(console_textarea, UI_FONT_24, 0);
     lv_obj_set_style_text_color(console_textarea, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_bg_color(console_textarea, lv_color_hex(THEME_COLOR_BACKGROUND), 0);
     lv_obj_set_style_border_width(console_textarea, 1, 0);
@@ -58,31 +58,31 @@ void AutoTuneScreen::create() {
 
     message_label = lv_label_create(result_container);
     lv_label_set_text(message_label, "New Motor Latency:");
-    lv_obj_set_style_text_font(message_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(message_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(message_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(message_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_width(message_label, HW_UI_CONTENT_WIDTH_PX);
     lv_label_set_long_mode(message_label, LV_LABEL_LONG_WRAP);
-    lv_obj_align(message_label, LV_ALIGN_TOP_MID, 0, -60);
+    lv_obj_align(message_label, LV_ALIGN_TOP_MID, 0, UI_SY(-60));
 
     final_latency_label = lv_label_create(result_container);
     lv_label_set_text(final_latency_label, "110 ms");
-    lv_obj_set_style_text_font(final_latency_label, &lv_font_montserrat_56, 0);
+    lv_obj_set_style_text_font(final_latency_label, UI_FONT_56, 0);
     lv_obj_set_style_text_color(final_latency_label, lv_color_hex(THEME_COLOR_SUCCESS), 0);
     lv_obj_align(final_latency_label, LV_ALIGN_CENTER, 0, 0);
 
     previous_latency_label = lv_label_create(result_container);
     lv_label_set_text(previous_latency_label, "Previous Value: 150 ms");
-    lv_obj_set_style_text_font(previous_latency_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(previous_latency_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(previous_latency_label, lv_color_hex(0x888888), 0);
     lv_obj_set_style_text_align(previous_latency_label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(previous_latency_label, LV_ALIGN_TOP_MID, 0, 80);
+    lv_obj_align(previous_latency_label, LV_ALIGN_TOP_MID, 0, UI_SY(80));
 
     // Buttons
     button_row = create_dual_button_row(screen, &cancel_button, &ok_button,
                                         LV_SYMBOL_CLOSE, LV_SYMBOL_OK,
                                         lv_color_hex(0x888888), lv_color_hex(THEME_COLOR_SUCCESS),
-                                        80, &lv_font_montserrat_32);
+                                        UI_SY(80), UI_FONT_32);
     lv_obj_set_width(button_row, HW_UI_CONTENT_WIDTH_PX);
     lv_obj_align(button_row, LV_ALIGN_BOTTOM_MID, 0, -10);
     lv_obj_clear_flag(button_row, LV_OBJ_FLAG_SCROLLABLE);
@@ -189,16 +189,16 @@ void AutoTuneScreen::show_failure_screen(const char* error_message) {
     }
 
     lv_label_set_text(message_label, full_message);
-    lv_obj_align(message_label, LV_ALIGN_CENTER, 0, -20);
+    lv_obj_align(message_label, LV_ALIGN_CENTER, 0, UI_SY(-20));
 
     char default_text[32];
     snprintf(default_text, sizeof(default_text), "%.0f ms", (float)GRIND_MOTOR_RESPONSE_LATENCY_DEFAULT_MS);
     lv_label_set_text(final_latency_label, default_text);
     lv_obj_set_style_text_color(final_latency_label, lv_color_hex(THEME_COLOR_WARNING), 0);
-    lv_obj_align(final_latency_label, LV_ALIGN_CENTER, 0, 80);
+    lv_obj_align(final_latency_label, LV_ALIGN_CENTER, 0, UI_SY(80));
 
     lv_label_set_text(previous_latency_label, "Using default:");
-    lv_obj_align(previous_latency_label, LV_ALIGN_CENTER, 0, 50);
+    lv_obj_align(previous_latency_label, LV_ALIGN_CENTER, 0, UI_SY(50));
 }
 
 void AutoTuneScreen::append_console_message(const char* message) {

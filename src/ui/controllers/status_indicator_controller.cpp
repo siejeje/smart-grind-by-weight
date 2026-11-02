@@ -19,18 +19,18 @@ void StatusIndicatorController::build() {
     // Create BLE status icon (rightmost)
     ble_status_icon_ = lv_label_create(lv_scr_act());
     lv_label_set_text(ble_status_icon_, LV_SYMBOL_BLUETOOTH);
-    lv_obj_set_style_text_font(ble_status_icon_, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(ble_status_icon_, UI_STATUS_ICON_FONT, 0);
     lv_obj_set_style_text_color(ble_status_icon_, lv_color_hex(THEME_COLOR_ACCENT), 0);
-    lv_obj_align(ble_status_icon_, LV_ALIGN_TOP_RIGHT, -10, 10);
+    lv_obj_align(ble_status_icon_, LV_ALIGN_TOP_RIGHT, -UI_STATUS_ICON_MARGIN_X_PX, UI_STATUS_ICON_MARGIN_Y_PX);
     lv_obj_add_flag(ble_status_icon_, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(ble_status_icon_, LV_OBJ_FLAG_CLICKABLE);
 
     // Create warning icon (left of BLE icon)
     warning_icon_ = lv_label_create(lv_scr_act());
     lv_label_set_text(warning_icon_, LV_SYMBOL_WARNING);
-    lv_obj_set_style_text_font(warning_icon_, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(warning_icon_, UI_STATUS_ICON_FONT, 0);
     lv_obj_set_style_text_color(warning_icon_, lv_color_hex(THEME_COLOR_WARNING), 0);
-    lv_obj_align(warning_icon_, LV_ALIGN_TOP_RIGHT, -45, 10);
+    lv_obj_align(warning_icon_, LV_ALIGN_TOP_RIGHT, -UI_STATUS_ICON_SPACING_PX, UI_STATUS_ICON_MARGIN_Y_PX);
     lv_obj_add_flag(warning_icon_, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(warning_icon_, LV_OBJ_FLAG_CLICKABLE);
 
