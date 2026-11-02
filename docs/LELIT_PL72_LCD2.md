@@ -41,7 +41,7 @@ zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
 
 ## Okablowanie
 
-- **HX711:** VCC → 3V3, GND → GND, DT → GPIO16, SCK → GPIO15. Tensometr: E+ czerwony, E− czarny, A− biały, A+ zielony (typowo, sprawdź w karcie tensometru).
+- **HX711:** VCC → 3V3, GND → GND, DT → GPIO16, SCK → GPIO15. Tensometr MAVIN (5 przewodów): E+ czerwony, E− czarny, A+ zielony, A− biały, przeźroczysty = ekran → GND tylko po stronie HX711 (na tensometrze niepodłączony).
 - **Pololu 5426:** VIN → 3V3, GND → GND, EN → GPIO18. **Rezystor 10–100 kΩ między EN a GND** utrzymuje przekaźnik wyłączony podczas resetu i bootu. Wyjście (2 piny) → równolegle do styków przycisku add/stop.
 - **Zasilanie:** 18650 → KCD1 → złącze MX1.25 baterii na płytce (ładowanie przez USB-C, układ ETA6098). **Sprawdź polaryzację złącza miernikiem.**
 

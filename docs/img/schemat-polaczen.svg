@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1130" viewBox="0 0 1600 1130"><rect width="1600" height="1130" fill="#ffffff"/>
+<text x="40" y="50" font-family="DejaVu Sans, sans-serif" font-size="26" text-anchor="start" font-weight="bold" fill="#222">Smart Grind-by-Weight – Lelit William PL72: schemat połączeń</text>
+<text x="40" y="80" font-family="DejaVu Sans, sans-serif" font-size="16" text-anchor="start" font-weight="normal" fill="#555">Waveshare ESP32-S3-Touch-LCD-2 • HX711 • MAVIN ZZPH6 1 kg • Pololu 5426 • 18650 • KCD1-11</text>
+<rect x="40" y="380" width="210" height="150" rx="10" fill="#fff4d6" stroke="#333" stroke-width="2"/>
+<text x="145" y="410" font-family="DejaVu Sans, sans-serif" font-size="17" text-anchor="middle" font-weight="bold" fill="#222">Ogniwo 18650</text>
+<text x="145" y="432" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">Samsung INR18650-25R</text>
+<text x="145" y="452" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">w koszyku 18650</text>
+<circle cx="250" cy="440" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="240" y="445" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">+</text>
+<circle cx="250" cy="500" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="240" y="505" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">−</text>
+<rect x="330" y="405" width="130" height="70" rx="10" fill="#eef2f7" stroke="#333" stroke-width="2"/>
+<text x="395" y="428" font-family="DejaVu Sans, sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#222">KCD1-11</text>
+<text x="395" y="448" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">wyłącznik</text>
+<circle cx="330" cy="440" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="340" y="445" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222"></text>
+<circle cx="460" cy="440" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="470" y="445" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222"></text>
+<line x1="365" y1="462" x2="420" y2="452" stroke="#333" stroke-width="2"/><circle cx="365" cy="462" r="3" fill="#333"/><circle cx="425" cy="462" r="3" fill="#333"/>
+<polyline points="254,440 326,440" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="464,440 556,440" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="254,500 556,500" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="500" y="430" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#d62828">BAT+</text>
+<text x="500" y="520" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#222">BAT−</text>
+<rect x="560" y="170" width="380" height="620" rx="10" fill="#e3f0ff" stroke="#1d4f91" stroke-width="3"/>
+<text x="750" y="205" font-family="DejaVu Sans, sans-serif" font-size="16" text-anchor="middle" font-weight="normal" fill="#1d4f91">Waveshare</text>
+<text x="750" y="228" font-family="DejaVu Sans, sans-serif" font-size="19" text-anchor="middle" font-weight="bold" fill="#1d4f91">ESP32-S3-Touch-LCD-2</text>
+<rect x="610" y="250" width="280" height="90" rx="6" fill="#0f2033" stroke="#0f2033" stroke-width="2"/>
+<text x="750" y="285" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="middle" font-weight="normal" fill="#fff">LCD ST7789 240×320</text>
+<text x="750" y="308" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#cfe3ff">dotyk CST816D (wbudowane)</text>
+<text x="580" y="420" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#1d4f91">Złącze baterii</text>
+<text x="580" y="470" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#1d4f91">MX1.25</text>
+<circle cx="560" cy="440" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="570" y="445" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">BAT+</text>
+<circle cx="560" cy="500" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="570" y="505" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">BAT−</text>
+<text x="580" y="560" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555">Ładowarka ETA6098</text>
+<text x="580" y="580" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555">ADC baterii: GPIO5 (na płytce)</text>
+<rect x="690" y="740" width="120" height="50" rx="6" fill="#cfd8e3" stroke="#333" stroke-width="2"/>
+<text x="750" y="770" font-family="DejaVu Sans, sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#222">USB-C</text>
+<text x="750" y="815" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">zasilanie / ładowanie / wgrywanie</text>
+<circle cx="940" cy="390" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="930" y="395" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">3V3</text>
+<circle cx="940" cy="440" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="930" y="445" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">GND</text>
+<circle cx="940" cy="500" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="930" y="505" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">GPIO16</text>
+<circle cx="940" cy="550" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="930" y="555" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">GPIO15</text>
+<circle cx="940" cy="660" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="930" y="665" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">GPIO18</text>
+<rect x="1090" y="350" width="210" height="240" rx="10" fill="#e9f7ec" stroke="#2a7a3a" stroke-width="2"/>
+<text x="1195" y="380" font-family="DejaVu Sans, sans-serif" font-size="18" text-anchor="middle" font-weight="bold" fill="#2a7a3a">HX711</text>
+<text x="1195" y="400" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#555">wzmacniacz tensometru</text>
+<circle cx="1090" cy="420" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="425" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">VCC</text>
+<circle cx="1090" cy="460" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="465" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">GND</text>
+<circle cx="1090" cy="500" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="505" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">DT (DOUT)</text>
+<circle cx="1090" cy="550" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="555" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">SCK</text>
+<circle cx="1300" cy="420" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="425" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">E+</text>
+<circle cx="1300" cy="460" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="465" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">E−</text>
+<circle cx="1300" cy="500" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="505" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">A−</text>
+<circle cx="1300" cy="540" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="545" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">A+</text>
+<rect x="1420" y="390" width="150" height="180" rx="10" fill="#f3f3f3" stroke="#333" stroke-width="2"/>
+<text x="1495" y="425" font-family="DejaVu Sans, sans-serif" font-size="16" text-anchor="middle" font-weight="bold" fill="#222">Tensometr</text>
+<text x="1495" y="445" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">MAVIN ZZPH6</text>
+<text x="1495" y="463" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#555">1 kg</text>
+<text x="1495" y="545" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#777">(podest wagi)</text>
+<polyline points="1304,420 1420,420" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<text x="1362" y="414" font-family="DejaVu Sans, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#444">czerwony</text>
+<polyline points="1304,460 1420,460" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="1362" y="454" font-family="DejaVu Sans, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#444">czarny</text>
+<polyline points="1304,500 1420,500" fill="none" stroke="#9aa0a6" stroke-width="3" stroke-linejoin="round"/>
+<text x="1362" y="494" font-family="DejaVu Sans, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#444">biały</text>
+<polyline points="1304,540 1420,540" fill="none" stroke="#2a9d3f" stroke-width="3" stroke-linejoin="round"/>
+<text x="1362" y="534" font-family="DejaVu Sans, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#444">zielony</text>
+<polyline points="1495,570 1495,610 1030,610" fill="none" stroke="#b8c4cc" stroke-width="3" stroke-dasharray="7,4"/>
+<circle cx="1030" cy="610" r="5" fill="#222"/>
+<text x="1250" y="603" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#555">przeźroczysty = ekran → GND (tylko po stronie HX711)</text>
+<rect x="1090" y="630" width="210" height="200" rx="10" fill="#f6ecff" stroke="#6b3fa0" stroke-width="2"/>
+<text x="1195" y="660" font-family="DejaVu Sans, sans-serif" font-size="18" text-anchor="middle" font-weight="bold" fill="#6b3fa0">Pololu 5426</text>
+<text x="1195" y="680" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#555">SSR, izolowany, maks. 100 V</text>
+<circle cx="1090" cy="700" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="705" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">EN</text>
+<circle cx="1090" cy="750" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="755" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">GND</text>
+<circle cx="1090" cy="800" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1100" y="805" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">VIN</text>
+<circle cx="1300" cy="720" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="725" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">OUT</text>
+<circle cx="1300" cy="790" r="4" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1290" y="795" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="end" font-weight="normal" fill="#222">OUT</text>
+<polyline points="944,390 1000,390 1000,420 1086,420" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="1000,420 1000,800 1086,800" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="1000" cy="420" r="5" fill="#d62828"/>
+<polyline points="944,440 1030,440 1030,460 1086,460" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="1030,460 1030,750 1086,750" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="1030" cy="460" r="5" fill="#222"/>
+<polyline points="944,500 1086,500" fill="none" stroke="#1d6fd8" stroke-width="3" stroke-linejoin="round"/>
+<text x="1015" y="494" font-family="DejaVu Sans, sans-serif" font-size="1" text-anchor="start" font-weight="normal" fill="#222"></text>
+<polyline points="944,550 1086,550" fill="none" stroke="#e07b00" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="944,660 970,660 970,700 1086,700" fill="none" stroke="#7b3fbf" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="1060" cy="700" r="5" fill="#7b3fbf"/>
+<rect x="1052" y="710" width="16" height="30" fill="#fff" stroke="#333" stroke-width="2"/>
+<line x1="1060" y1="700" x2="1060" y2="710" stroke="#7b3fbf" stroke-width="2"/>
+<circle cx="1060" cy="750" r="5" fill="#222"/>
+<text x="1047" y="731" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="end" font-weight="bold" fill="#222">R</text>
+<text x="960" y="860" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#6b3fa0">R = 10–100 kΩ (pull-down EN→GND)</text>
+<polyline points="1060,780 1060,780" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<rect x="1360" y="640" width="220" height="330" rx="10" fill="#fafafa" stroke="#888" stroke-width="2" stroke-dasharray="8,6"/>
+<text x="1470" y="668" font-family="DejaVu Sans, sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#222">Lelit William PL72</text>
+<text x="1470" y="688" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#666">(bez zmian w obwodach)</text>
+<rect x="1390" y="705" width="160" height="105" rx="6" fill="#fff" stroke="#555" stroke-width="2"/>
+<text x="1470" y="728" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#222">Oryginalny przycisk</text>
+<text x="1470" y="745" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#555">add/stop (styki)</text>
+<line x1="1420" y1="760" x2="1420" y2="795" stroke="#333" stroke-width="2"/><line x1="1520" y1="760" x2="1520" y2="795" stroke="#333" stroke-width="2"/>
+<line x1="1440" y1="770" x2="1500" y2="770" stroke="#333" stroke-width="3"/><line x1="1470" y1="770" x2="1470" y2="757" stroke="#333" stroke-width="2"/>
+<line x1="1420" y1="780" x2="1440" y2="780" stroke="#333" stroke-width="2"/><line x1="1500" y1="780" x2="1520" y2="780" stroke="#333" stroke-width="2"/>
+<polyline points="1304,720 1340,720 1340,780 1420,780" fill="none" stroke="#555" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="1304,790 1330,790 1330,830 1530,830 1530,780 1520,780" fill="none" stroke="#555" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="1420" cy="780" r="5" fill="#555"/>
+<circle cx="1520" cy="780" r="5" fill="#555"/>
+<rect x="1390" y="860" width="160" height="80" rx="6" fill="#eee" stroke="#555" stroke-width="2"/>
+<text x="1470" y="893" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#222">Fabryczny sterownik</text>
+<text x="1470" y="912" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#555">silnika (230 V)</text>
+<line x1="1440" y1="830" x2="1440" y2="860" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/><line x1="1500" y1="830" x2="1500" y2="860" stroke="#555" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="1335" y="950" font-family="DejaVu Sans, sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#444">SSR równolegle do styków przycisku</text>
+<rect x="40" y="600" width="470" height="500" rx="8" fill="#fff" stroke="#bbb" stroke-width="2"/>
+<text x="60" y="630" font-family="DejaVu Sans, sans-serif" font-size="17" text-anchor="start" font-weight="bold" fill="#222">Tabela połączeń</text>
+<rect x="60" y="648" width="14" height="14" fill="#d62828"/>
+<text x="84" y="660" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">3V3</text>
+<text x="210" y="660" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">HX711 VCC, Pololu VIN</text>
+<rect x="60" y="674" width="14" height="14" fill="#222"/>
+<text x="84" y="686" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">GND</text>
+<text x="210" y="686" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">HX711 GND, Pololu GND, R</text>
+<rect x="60" y="700" width="14" height="14" fill="#1d6fd8"/>
+<text x="84" y="712" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">GPIO16</text>
+<text x="210" y="712" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">HX711 DT (DOUT)</text>
+<rect x="60" y="726" width="14" height="14" fill="#e07b00"/>
+<text x="84" y="738" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">GPIO15</text>
+<text x="210" y="738" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">HX711 SCK</text>
+<rect x="60" y="752" width="14" height="14" fill="#7b3fbf"/>
+<text x="84" y="764" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">GPIO18</text>
+<text x="210" y="764" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">Pololu EN (+ R do GND)</text>
+<rect x="60" y="778" width="14" height="14" fill="#b8c4cc"/>
+<text x="84" y="790" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">Ekran tensom.</text>
+<text x="210" y="790" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">przeźroczysty → GND</text>
+<rect x="60" y="804" width="14" height="14" fill="#555"/>
+<text x="84" y="816" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">Pololu OUT×2</text>
+<text x="210" y="816" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">równolegle do styków przycisku</text>
+<rect x="60" y="830" width="14" height="14" fill="#d62828"/>
+<text x="84" y="842" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#222">BAT+ / BAT−</text>
+<text x="210" y="842" font-family="DejaVu Sans, sans-serif" font-size="14" text-anchor="start" font-weight="normal" fill="#222">18650 przez KCD1-11 (linia +)</text>
+<text x="60" y="882" font-family="DejaVu Sans, sans-serif" font-size="16" text-anchor="start" font-weight="bold" fill="#222">Uwagi</text>
+<text x="60" y="908" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">Przed podłączeniem SSR zmierz napięcie na stykach</text>
+<text x="60" y="929" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333"> przycisku. Powyżej 100 V lub 230 V – nie podłączaj.</text>
+<text x="60" y="950" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">Sprawdź miernikiem polaryzację wtyku MX1.25.</text>
+<text x="60" y="971" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">Tensometr: czerw. E+, czarny E−, zielony A+,</text>
+<text x="60" y="992" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333"> biały A−, przeźroczysty = ekran (do GND).</text>
+<text x="60" y="1013" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">Numery GPIO sprawdź z opisem na płytce.</text>
+<text x="60" y="1034" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">KCD1-11 odcina tylko baterię; USB-C nadal zasila.</text>
+<text x="60" y="1055" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">Firmware: relay LOW po resecie, limit 18 s ciągłej</text>
+<text x="60" y="1076" font-family="DejaVu Sans, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#333">  pracy, timeout 30 s, stop dotykiem.</text>
+</svg>
