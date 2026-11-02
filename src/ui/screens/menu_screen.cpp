@@ -365,7 +365,7 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
     lv_obj_set_style_text_color(swipe_desc_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_margin_bottom(swipe_desc_label, 10, 0);
     lv_label_set_long_mode(swipe_desc_label, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(swipe_desc_label, 260);
+    lv_obj_set_width(swipe_desc_label, HW_UI_CONTENT_WIDTH_PX - 20);
 
     // Swipe toggle using existing pattern
     create_toggle_row(parent, "Swipe", &grind_mode_swipe_toggle);
@@ -1075,7 +1075,7 @@ lv_obj_t* MenuScreen::create_description_label(lv_obj_t* parent, const char* tex
     lv_obj_set_style_pad_right(container, 14, 0);
     lv_obj_set_style_margin_top(container, 12, 0);
     lv_obj_set_style_margin_bottom(container, 12, 0);
-    lv_obj_set_size(container, 280, LV_SIZE_CONTENT);
+    lv_obj_set_size(container, HW_UI_CONTENT_WIDTH_PX, LV_SIZE_CONTENT);
     lv_obj_clear_flag(container, LV_OBJ_FLAG_SCROLLABLE);
 
     // Create label inside container

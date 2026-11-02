@@ -58,7 +58,7 @@ void BlockingOperationOverlay::show_and_execute(BlockingOperation op_type,
     const char* message = get_operation_message(op_type, custom_message);
     lv_label_set_text(label, message);
     lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(label, 240);
+    lv_obj_set_width(label, HW_UI_CONTENT_WIDTH_PX - 40);
     
     // Store callbacks
     completion_callback = completion_func;

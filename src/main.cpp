@@ -32,6 +32,12 @@ static uint32_t core1_last_heartbeat_time = 0;
 #endif
 
 void setup() {
+    // SAFETY: force the grinder control output LOW as the very first action after
+    // reset, before any other subsystem initializes. (An external pull-down on the
+    // relay EN line keeps it LOW during the boot ROM phase.)
+    pinMode(HW_MOTOR_RELAY_PIN, OUTPUT);
+    digitalWrite(HW_MOTOR_RELAY_PIN, LOW);
+
     Serial.begin(HW_SERIAL_BAUD_RATE);
 #ifdef UI_DEBUG_SERIAL_DELAY_MS
     delay(UI_DEBUG_SERIAL_DELAY_MS);
