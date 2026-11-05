@@ -31,18 +31,19 @@ pio device monitor -b 115200
 | LCD MOSI / SCLK / CS / DC | 38 / 39 / 45 / 42 | wg demo Waveshare |
 | LCD podświetlenie | 1 | PWM (jasność w menu) |
 | Dotyk SDA / SCL | 48 / 47 | CST816D, adres 0x15, wspólna magistrala z IMU |
-| HX711 DOUT | 16 | linia kamery, wolna gdy kamera nie jest podłączona |
-| HX711 SCK | 15 | j.w. |
-| SSR (Pololu 5426 EN) | 18 | |
+| HX711 SCK | 15 | złącze P2, pin 7 (linia kamery, wolna bez kamery) |
+| HX711 DOUT | 13 | złącze P2, pin 8 |
+| SSR (Pololu 5426 EN) | 11 | złącze P2, pin 9 |
+| 3V3 / GND | – | złącze P2, piny 1 / 2 (drugi GND: pin 13) |
 | ADC baterii | 5 | dzielnik ×3 (na razie nieużywany w firmware) |
 
-**Przed lutowaniem porównaj GPIO 15, 16 i 18 z opisem złączy na płytce.** Jeśli wybierzesz inne,
+**Wszystkie sygnały są na jednym złączu P2** (schemat Waveshare ESP32-S3-Touch-LCD-2_V2). Przed lutowaniem porównaj z opisem na płytce. Nie podłączaj kamery – używa tych samych GPIO. Jeśli wybierzesz inne,
 zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
 
 ## Okablowanie
 
-- **HX711:** VCC → 3V3, GND → GND, DT → GPIO16, SCK → GPIO15. Tensometr MAVIN (5 przewodów): E+ czerwony, E− czarny, A+ zielony, A− biały, przeźroczysty = ekran → GND tylko po stronie HX711 (na tensometrze niepodłączony).
-- **Pololu 5426:** VIN → 3V3, GND → GND, EN → GPIO18. **Rezystor 10–100 kΩ między EN a GND** utrzymuje przekaźnik wyłączony podczas resetu i bootu. Wyjście (2 piny) → równolegle do styków przycisku add/stop.
+- **HX711:** VCC → 3V3, GND → GND, DT → GPIO13, SCK → GPIO15. Tensometr MAVIN (5 przewodów): E+ czerwony, E− czarny, A+ zielony, A− biały, przeźroczysty = ekran → GND tylko po stronie HX711 (na tensometrze niepodłączony).
+- **Pololu 5426:** VIN → 3V3, GND → GND, EN → GPIO11. **Rezystor 10–100 kΩ między EN a GND** utrzymuje przekaźnik wyłączony podczas resetu i bootu. Wyjście (2 piny) → równolegle do styków przycisku add/stop.
 - **Zasilanie:** 18650 → KCD1 → złącze MX1.25 baterii na płytce (ładowanie przez USB-C, układ ETA6098). **Sprawdź polaryzację złącza miernikiem.**
 
 ## Zabezpieczenia

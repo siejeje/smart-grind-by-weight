@@ -49,17 +49,22 @@
 
 // Load Cell ADC Pins
 #if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
-// GPIO2/3 are camera data lines on this board; use free header pins instead.
-// Change these to match your wiring if needed (avoid strapping pins 0, 3, 45, 46).
-#define HW_LOADCELL_DOUT_PIN 16                                                // HX711 DOUT
-#define HW_LOADCELL_SCK_PIN 15                                                 // HX711 PD_SCK
+// All external signals sit on header P2 (pin 1 3V3, 2 GND, 7 IO15, 8 IO13, 9 IO11),
+// per Waveshare schematic ESP32-S3-Touch-LCD-2_V2.pdf. These are camera data lines,
+// free while no camera is plugged in. Avoid strapping pins 0, 3, 45, 46 and 47/48 (touch I2C).
+#define HW_LOADCELL_DOUT_PIN 13                                                // HX711 DOUT  (P2-8)
+#define HW_LOADCELL_SCK_PIN 15                                                 // HX711 PD_SCK (P2-7)
 #else
 #define HW_LOADCELL_DOUT_PIN 3                                                 // HX711 data output pin
 #define HW_LOADCELL_SCK_PIN 2                                                  // HX711 serial clock pin
 #endif
 
 // Motor Control
+#if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
+#define HW_MOTOR_RELAY_PIN 11                                                  // Pololu 5426 EN (P2-9)
+#else
 #define HW_MOTOR_RELAY_PIN 18                                                  // GPIO pin for grinder motor control relay
+#endif
 // Hard safety limit for a single continuous motor activation, enforced inside the
 // Grinder driver by an independent esp_timer (in addition to GRIND_TIMEOUT_SEC).
 // Lelit William PL72: the add/stop button runs the motor at most ~19 s per hold,
