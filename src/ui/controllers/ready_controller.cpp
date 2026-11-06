@@ -134,7 +134,11 @@ void ReadyUIController::handle_vertical_swipe(bool up) {
     if (next >= kProfileTabs) next = 0;
     if (next < 0) next = kProfileTabs - 1;
 
-    ui_manager_->ready_screen.set_active_tab(next);
+    if (ui_manager_->ready_screen.is_vertical_profiles()) {
+        ui_manager_->ready_screen.slide_vertical_profile(next, up);
+    } else {
+        ui_manager_->ready_screen.set_active_tab(next);
+    }
     handle_tab_change(next);
 }
 

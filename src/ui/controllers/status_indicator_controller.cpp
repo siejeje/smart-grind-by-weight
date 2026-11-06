@@ -120,38 +120,43 @@ void StatusIndicatorController::update_battery() {
     if (!battery_label_) {
         return;
     }
+    BatteryMonitor::update();  // internally rate-limited; polls CHG_DET every call
+
     uint32_t now = millis();
-    if (last_battery_percent_ >= 0 && now - last_battery_update_ms_ < kBatteryRefreshMs) {
+    if (now - last_battery_update_ms_ < kBatteryRefreshMs) {
         return;
     }
     last_battery_update_ms_ = now;
 
-    BatteryMonitor::update();
     battery_voltage_ = BatteryMonitor::voltage();
     bool charging = BatteryMonitor::charging();
+    bool usb_only = BatteryMonitor::usb_only();
     int pct = BatteryMonitor::percent();
-    if (pct < 0) {
+    if (!usb_only && pct < 0) {
         return;
     }
-
-    if (pct == last_battery_percent_ && charging == last_charging_) {
+    int state_key = usb_only ? -2 : pct;
+    if (state_key == last_battery_percent_ && charging == last_charging_) {
         return;
     }
-    last_battery_percent_ = pct;
+    last_battery_percent_ = state_key;
     last_charging_ = charging;
 
     char buf[32];
-    if (charging) {
+    uint32_t color = THEME_COLOR_TEXT_PRIMARY;
+    if (usb_only) {
+        // Powered from USB, battery disconnected (switch off)
+        snprintf(buf, sizeof(buf), LV_SYMBOL_USB " USB");
+        color = THEME_COLOR_TEXT_SECONDARY;
+    } else if (charging) {
         snprintf(buf, sizeof(buf), LV_SYMBOL_CHARGE " %d%%", pct);
+        color = THEME_COLOR_SUCCESS;
     } else {
         snprintf(buf, sizeof(buf), "%s %d%%", battery_symbol(pct), pct);
+        if (pct < 15) color = THEME_COLOR_ERROR;
+        else if (pct < 30) color = THEME_COLOR_WARNING;
     }
     lv_label_set_text(battery_label_, buf);
-
-    uint32_t color = THEME_COLOR_TEXT_PRIMARY;
-    if (charging) color = THEME_COLOR_SUCCESS;
-    else if (pct < 15) color = THEME_COLOR_ERROR;
-    else if (pct < 30) color = THEME_COLOR_WARNING;
     lv_obj_set_style_text_color(battery_label_, lv_color_hex(color), 0);
 #endif
 }

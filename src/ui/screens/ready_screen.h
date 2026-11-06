@@ -27,6 +27,8 @@ public:
     bool is_vertical_profiles() const { return vertical_profiles; }
     // Map the tabview's physical page index to the logical tab (0-2 profiles, 3 menu)
     int logical_tab_from_tabview(int physical) const;
+    // Animated vertical slide between profiles (Profile swipe mode only)
+    void slide_vertical_profile(int next, bool up);
     void set_profile_long_press_handler(lv_event_cb_t handler);
     
     bool is_visible() const { return visible; }
@@ -37,5 +39,7 @@ public:
 private:
     void create_profile_page(lv_obj_t* parent, int profile_index, const char* profile_name, float weight);
     void create_menu_page(lv_obj_t* parent);
-    static void vertical_scroll_end_cb(lv_event_t* e);
+    void place_vertical_cards(int active);
+    static void anim_y_cb(lv_anim_t* a, int32_t v);
+    static void anim_hide_done_cb(lv_anim_t* a);
 };

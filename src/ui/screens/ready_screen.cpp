@@ -53,20 +53,15 @@ void ReadyScreen::create() {
         lv_obj_clear_flag(profile_tabs[i], LV_OBJ_FLAG_SCROLLABLE);
     }
 
-    // Vertical pager (hidden until "Profile swipe" is enabled)
+    // Vertical stack (used only in "Profile swipe" mode): plain, non-scrollable container
+    // holding all three cards; vertical gestures slide the cards with an animation.
     vertical_container = lv_obj_create(profile_tabs[0]);
     lv_obj_remove_style_all(vertical_container);
     lv_obj_set_size(vertical_container, LV_PCT(100), LV_PCT(100));
-    lv_obj_set_flex_flow(vertical_container, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_scroll_dir(vertical_container, LV_DIR_VER);
-    lv_obj_set_scroll_snap_y(vertical_container, LV_SCROLL_SNAP_CENTER);
-    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_ONE);
-    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
-    lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
-    lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_SCROLL_ELASTIC);
-    lv_obj_set_scrollbar_mode(vertical_container, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_GESTURE_BUBBLE);
-    lv_obj_add_event_cb(vertical_container, vertical_scroll_end_cb, LV_EVENT_SCROLL_END, this);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
     lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_HIDDEN);
 
     // Create menu tab page
@@ -137,13 +132,83 @@ void ReadyScreen::set_active_tab(int tab) {
         return;
     }
     if (tab < 3) {
-        vertical_profile_index = tab;
         lv_tabview_set_act(tabview, 0, LV_ANIM_OFF);
-        lv_obj_update_layout(vertical_container);
-        lv_obj_scroll_to_y(vertical_container, tab * lv_obj_get_content_height(vertical_container), LV_ANIM_OFF);
+        place_vertical_cards(tab);
     } else {
         lv_tabview_set_act(tabview, 1, LV_ANIM_OFF);  // MENU is the second visible page
     }
+}
+
+void ReadyScreen::place_vertical_cards(int active) {
+    for (int i = 0; i < 3; i++) lv_anim_delete(profile_cards[i], nullptr);
+    vertical_profile_index = active;
+    for (int i = 0; i < 3; i++) {
+        lv_obj_set_pos(profile_cards[i], 0, 0);
+        lv_obj_set_style_opa(profile_cards[i], LV_OPA_COVER, 0);
+        if (i == active) {
+            lv_obj_clear_flag(profile_cards[i], LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_add_flag(profile_cards[i], LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+}
+
+void ReadyScreen::anim_y_cb(lv_anim_t* a, int32_t v) {
+    lv_obj_t* obj = static_cast<lv_obj_t*>(a->var);
+    lv_obj_set_y(obj, v);
+    // Fade with distance from the centre so the moving card never covers the status bar
+    int32_t span = LV_MAX(LV_ABS(a->start_value), LV_ABS(a->end_value));
+    int32_t d = LV_ABS(v);
+    lv_opa_t opa = span > 0 ? (lv_opa_t)LV_CLAMP(0, 255 - (d * 255 * 2) / span, 255) : LV_OPA_COVER;
+    lv_obj_set_style_opa(obj, opa, 0);
+}
+
+void ReadyScreen::anim_hide_done_cb(lv_anim_t* a) {
+    lv_obj_t* obj = static_cast<lv_obj_t*>(a->var);
+    lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_y(obj, 0);
+    lv_obj_set_style_opa(obj, LV_OPA_COVER, 0);
+}
+
+void ReadyScreen::slide_vertical_profile(int next, bool up) {
+    if (!vertical_profiles || next < 0 || next > 2) {
+        return;
+    }
+    if (next == vertical_profile_index) {
+        return;
+    }
+    // Finish any running slide immediately
+    place_vertical_cards(vertical_profile_index);
+
+    int32_t h = lv_obj_get_height(vertical_container);
+    if (h <= 0) {
+        place_vertical_cards(next);
+        return;
+    }
+    lv_obj_t* out_card = profile_cards[vertical_profile_index];
+    lv_obj_t* in_card = profile_cards[next];
+    vertical_profile_index = next;
+
+    const int32_t out_end = up ? -h : h;   // swipe up: current card leaves upwards
+    const int32_t in_start = up ? h : -h;  // next card enters from below
+    lv_obj_set_y(in_card, in_start);
+    lv_obj_clear_flag(in_card, LV_OBJ_FLAG_HIDDEN);
+
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_custom_exec_cb(&a, anim_y_cb);
+    lv_anim_set_duration(&a, 220);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_out);
+
+    lv_anim_set_var(&a, out_card);
+    lv_anim_set_values(&a, 0, out_end);
+    lv_anim_set_completed_cb(&a, anim_hide_done_cb);
+    lv_anim_start(&a);
+
+    lv_anim_set_var(&a, in_card);
+    lv_anim_set_values(&a, in_start, 0);
+    lv_anim_set_completed_cb(&a, nullptr);
+    lv_anim_start(&a);
 }
 
 int ReadyScreen::logical_tab_from_tabview(int physical) const {
@@ -167,9 +232,13 @@ void ReadyScreen::set_vertical_profiles(bool enabled, int active_tab) {
         // Hidden tab pages are skipped by the flex layout: pages become [profiles][MENU]
         lv_obj_add_flag(profile_tabs[1], LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(profile_tabs[2], LV_OBJ_FLAG_HIDDEN);
+        place_vertical_cards((active_tab >= 0 && active_tab < 3) ? active_tab : vertical_profile_index);
     } else {
+        for (int i = 0; i < 3; i++) lv_anim_delete(profile_cards[i], nullptr);
         for (int i = 0; i < 3; i++) {
             lv_obj_set_parent(profile_cards[i], profile_tabs[i]);
+            lv_obj_set_pos(profile_cards[i], 0, 0);
+            lv_obj_clear_flag(profile_cards[i], LV_OBJ_FLAG_HIDDEN);
         }
         lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(profile_tabs[1], LV_OBJ_FLAG_HIDDEN);
@@ -179,27 +248,6 @@ void ReadyScreen::set_vertical_profiles(bool enabled, int active_tab) {
     set_active_tab(active_tab);
 }
 
-void ReadyScreen::vertical_scroll_end_cb(lv_event_t* e) {
-    ReadyScreen* self = static_cast<ReadyScreen*>(lv_event_get_user_data(e));
-    if (!self || !self->vertical_profiles) {
-        return;
-    }
-    lv_obj_t* cont = self->vertical_container;
-    int32_t h = lv_obj_get_content_height(cont);
-    if (h <= 0) {
-        return;
-    }
-    lv_point_t end;
-    lv_obj_get_scroll_end(cont, &end);
-    int idx = (end.y + h / 2) / h;
-    if (idx < 0) idx = 0;
-    if (idx > 2) idx = 2;
-    if (idx != self->vertical_profile_index) {
-        self->vertical_profile_index = idx;
-        // Reuse the existing TAB_CHANGE pipeline (handler maps the index via logical_tab_from_tabview)
-        lv_obj_send_event(self->tabview, LV_EVENT_VALUE_CHANGED, NULL);
-    }
-}
 
 void ReadyScreen::set_profile_long_press_handler(lv_event_cb_t handler) {
     for (int i = 0; i < 3; i++) {

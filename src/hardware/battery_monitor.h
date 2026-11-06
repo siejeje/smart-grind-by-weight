@@ -13,4 +13,9 @@ float raw_voltage();    // last unfiltered measurement [V]
 int adc_millivolts();   // last ADC pin voltage [mV] (before divider correction)
 int percent();          // 0..100, -1 if unknown
 bool charging();
+// True when the board runs from USB with no cell connected (battery switch off):
+// detected from the charger behaviour (CHG line toggling, VBAT jumping or above 4.25 V).
+bool usb_only();
+int chg_toggles();      // CHG_DET edges in the last detection window (diagnostics)
+float vbat_spread();    // max-min VBAT over the detection window [V] (diagnostics)
 }  // namespace BatteryMonitor

@@ -1,5 +1,6 @@
 #include "menu_screen.h"
 #include <Arduino.h>
+#include <esp_system.h>
 #include <algorithm>
 #include "../../config/constants.h"
 #include "../../logging/grind_logging.h"
@@ -265,6 +266,7 @@ void MenuScreen::create_info_page(lv_obj_t* parent) {
    
     create_data_label(parent, "Uptime:", &uptime_label);
     create_data_label(parent, "RAM:", &memory_label);
+    create_data_label(parent, "Last reset:", &reset_reason_label);
 #if defined(HW_HAS_BATTERY_MONITOR)
     create_data_label(parent, "Battery:", &battery_info_label);
     create_data_label(parent, "Batt ADC:", &battery_adc_label);
@@ -676,13 +678,34 @@ void MenuScreen::update_info(const WeightSensor* weight_sensor, unsigned long up
 
     set_label_text_int(memory_label, free_heap / 1024, "kB");
 
+    if (reset_reason_label) {
+        const char* rr = "OTHER";
+        switch (esp_reset_reason()) {
+            case ESP_RST_POWERON: rr = "POWER ON"; break;
+            case ESP_RST_SW: rr = "SOFTWARE"; break;
+            case ESP_RST_PANIC: rr = "PANIC"; break;
+            case ESP_RST_INT_WDT: rr = "INT WDT"; break;
+            case ESP_RST_TASK_WDT: rr = "TASK WDT"; break;
+            case ESP_RST_WDT: rr = "WDT"; break;
+            case ESP_RST_BROWNOUT: rr = "BROWNOUT"; break;
+            case ESP_RST_USB: rr = "USB"; break;
+            default: break;
+        }
+        lv_label_set_text(reset_reason_label, rr);
+    }
+
 #if defined(HW_HAS_BATTERY_MONITOR)
     if (battery_info_label && BatteryMonitor::available()) {
         char bt[40];
-        snprintf(bt, sizeof(bt), "%.2fV %d%%%s", BatteryMonitor::voltage(), BatteryMonitor::percent(),
-                 BatteryMonitor::charging() ? " CHG" : "");
+        if (BatteryMonitor::usb_only()) {
+            snprintf(bt, sizeof(bt), "USB only%s", BatteryMonitor::charging() ? " CHG" : "");
+        } else {
+            snprintf(bt, sizeof(bt), "%.2fV %d%%%s", BatteryMonitor::voltage(), BatteryMonitor::percent(),
+                     BatteryMonitor::charging() ? " CHG" : "");
+        }
         lv_label_set_text(battery_info_label, bt);
-        snprintf(bt, sizeof(bt), "%dmV (%.2fV)", BatteryMonitor::adc_millivolts(), BatteryMonitor::raw_voltage());
+        snprintf(bt, sizeof(bt), "%.2fV d%.2f t%d", BatteryMonitor::raw_voltage(), BatteryMonitor::vbat_spread(),
+                 BatteryMonitor::chg_toggles());
         lv_label_set_text(battery_adc_label, bt);
     }
 #endif
