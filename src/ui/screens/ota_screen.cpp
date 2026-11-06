@@ -4,8 +4,8 @@
 
 void OTAScreen::create() {
     screen = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
-    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT - UI_CONTENT_TOP_PX);
+    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, UI_CONTENT_TOP_PX);
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(screen, 0, 0);
     lv_obj_set_style_pad_all(screen, UI_GRIND_PAD_PX, 0);
@@ -85,8 +85,8 @@ void OTAScreen::update_title(const char* title) {
 
 void OTAScreen::show_ota_mode() {
     // Ensure screen size is properly set
-    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
-    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT - UI_CONTENT_TOP_PX);
+    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, UI_CONTENT_TOP_PX);
     
     update_title("Updating");
     update_status("Receiving update....");
@@ -96,8 +96,8 @@ void OTAScreen::show_ota_mode() {
 
 void OTAScreen::show_data_export_mode() {
     // Ensure screen size matches OTA mode exactly
-    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
-    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT - UI_CONTENT_TOP_PX);
+    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, UI_CONTENT_TOP_PX);
     
     update_title("Exporting Data");
     update_status("Preparing export...");

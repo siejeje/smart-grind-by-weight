@@ -65,3 +65,10 @@ zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
 
 - Odcięcie przy niskim napięciu baterii (GPIO5, ok. 3,3 V) i wskaźnik baterii w UI.
 - Dopracowanie layoutu UI po pierwszych testach na ekranie 240×320.
+
+## Pasek stanu, bateria i gesty (LCD2)
+
+- **Pasek u góry na każdym ekranie:** po lewej bieżąca waga, po prawej bateria (%), ostrzeżenie, Bluetooth.
+- **Bateria:** napięcie z GPIO5 (dzielnik 200k/100k, ×3), procent z krzywej Li-ion. Ładowanie z linii CHG_DET (GPIO18, stan wysoki = ładowanie, wg schematu Waveshare V2) – wtedy ikona błyskawicy.
+- **Auto-tara po starcie:** ok. 2,5 s po włączeniu, jednorazowo, gdy waga jest skalibrowana i ekran główny jest aktywny. Tara przy mieleniu i w menu Scale bez zmian.
+- **Grind Settings → gesty pionowe:** „Mode” przełącza Weight/Time, „Profile” przełącza Single/Double/Custom (w górę = następny, w dół = poprzedni). Włączenie jednej opcji wyłącza drugą.

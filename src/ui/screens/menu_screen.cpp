@@ -372,7 +372,7 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
 
     // Descriptive label for swipe functionality
     lv_obj_t* swipe_desc_label = lv_label_create(parent);
-    lv_label_set_text(swipe_desc_label, "Enable swiping vertically to switch between Weight/Time modes");
+    lv_label_set_text(swipe_desc_label, "Vertical swipe on the main screen. Mode: Weight/Time. Profile: Single / Double / Custom.");
     lv_obj_set_style_text_font(swipe_desc_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(swipe_desc_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_margin_bottom(swipe_desc_label, 10, 0);
@@ -380,7 +380,8 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
     lv_obj_set_width(swipe_desc_label, HW_UI_CONTENT_WIDTH_PX - 20);
 
     // Swipe toggle using existing pattern
-    create_toggle_row(parent, "Swipe", &grind_mode_swipe_toggle);
+    create_toggle_row(parent, "Mode", &grind_mode_swipe_toggle);
+    create_toggle_row(parent, "Profile", &grind_profile_swipe_toggle);
 
     // Automatic actions section
     create_separator(parent, "Automation");
@@ -425,6 +426,10 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
     if (grind_mode_swipe_toggle) {
         lv_obj_add_event_cb(grind_mode_swipe_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
                            reinterpret_cast<void*>(static_cast<intptr_t>(ET::GRIND_MODE_SWIPE_TOGGLE)));
+    }
+    if (grind_profile_swipe_toggle) {
+        lv_obj_add_event_cb(grind_profile_swipe_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
+                           reinterpret_cast<void*>(static_cast<intptr_t>(ET::GRIND_PROFILE_SWIPE_TOGGLE)));
     }
     if (auto_start_toggle) {
         lv_obj_add_event_cb(auto_start_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
@@ -1121,7 +1126,9 @@ void MenuScreen::update_grind_mode_toggles() {
     Preferences swipe_prefs;
     swipe_prefs.begin("swipe", true); // read-only
     bool swipe_enabled = swipe_prefs.getBool("enabled", false);
+    bool swipe_profiles = swipe_prefs.getBool("profiles", false);
     swipe_prefs.end();
+    if (swipe_profiles) swipe_enabled = false;  // options are mutually exclusive
 
     // Read current grind mode from main grinder preferences using hardware manager
     int mode_index = 0; // Default to Weight (index 0)
@@ -1146,6 +1153,13 @@ void MenuScreen::update_grind_mode_toggles() {
             lv_obj_add_state(grind_mode_swipe_toggle, LV_STATE_CHECKED);
         } else {
             lv_obj_clear_state(grind_mode_swipe_toggle, LV_STATE_CHECKED);
+        }
+    }
+    if (grind_profile_swipe_toggle) {
+        if (swipe_profiles) {
+            lv_obj_add_state(grind_profile_swipe_toggle, LV_STATE_CHECKED);
+        } else {
+            lv_obj_clear_state(grind_profile_swipe_toggle, LV_STATE_CHECKED);
         }
     }
 

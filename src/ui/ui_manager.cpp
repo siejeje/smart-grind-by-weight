@@ -7,6 +7,7 @@
 #include "../logging/grind_logging.h"
 #include "../controllers/grind_mode_traits.h"
 #include <utility>
+#include "components/ui_operations.h"
 // Static instance pointer for grind event callbacks
 UIManager* UIManager::instance = nullptr;
 
@@ -170,6 +171,7 @@ void UIManager::update() {
     }
 
     update_auto_actions();
+    update_boot_tare();
 
     if (grinding_controller_) {
         grinding_controller_->update(current);
@@ -178,6 +180,33 @@ void UIManager::update() {
     if (status_indicator_controller_) {
         status_indicator_controller_->update();
     }
+}
+
+// One-shot automatic tare shortly after power-up so the live weight reads 0.0 g
+// with the empty cup holder. Grind-time tare and the menu Scale tare are unchanged.
+void UIManager::update_boot_tare() {
+    constexpr uint32_t kBootTareDelayMs = 2500;   // let HX711 output and filters settle
+    constexpr uint32_t kBootTareGiveUpMs = 20000;  // skip if never reached READY in time
+    if (boot_tare_done_) return;
+
+    uint32_t now = millis();
+    if (now < kBootTareDelayMs) return;
+    if (now > kBootTareGiveUpMs) {
+        boot_tare_done_ = true;
+        return;
+    }
+
+    auto* sensor = hardware_manager ? hardware_manager->get_weight_sensor() : nullptr;
+    if (!sensor || !sensor->is_calibrated() || !sensor->is_data_ready() || sensor->is_tare_in_progress()) {
+        return;
+    }
+    if (!state_machine || !state_machine->is_state(UIState::READY)) {
+        return;
+    }
+
+    boot_tare_done_ = true;
+    LOG_BLE("[STARTUP] Automatic boot tare\n");
+    UIOperations::execute_tare(hardware_manager);
 }
 
 void UIManager::switch_to_state(UIState new_state) {

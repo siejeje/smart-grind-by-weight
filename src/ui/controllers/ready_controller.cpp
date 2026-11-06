@@ -102,6 +102,34 @@ void ReadyUIController::toggle_mode() {
     }
 }
 
+void ReadyUIController::handle_vertical_swipe(bool up) {
+    if (!ui_manager_ || ui_manager_->current_tab >= 3) {
+        return;
+    }
+
+    Preferences prefs;
+    prefs.begin("swipe", true); // read-only
+    bool swipe_profiles = prefs.getBool("profiles", false);
+    prefs.end();
+
+    if (!swipe_profiles) {
+        toggle_mode();  // honours the existing "Swipe mode" setting
+        return;
+    }
+
+    // Cycle Single -> Double -> Custom (swipe up = next, swipe down = previous)
+    constexpr int kProfileTabs = 3;
+    int next = ui_manager_->current_tab + (up ? 1 : -1);
+    if (next >= kProfileTabs) next = 0;
+    if (next < 0) next = kProfileTabs - 1;
+
+    lv_obj_t* tabview = ui_manager_->ready_screen.get_tabview();
+    if (tabview) {
+        lv_tabview_set_active(tabview, static_cast<uint32_t>(next), LV_ANIM_ON);
+    }
+    handle_tab_change(next);
+}
+
 void ReadyUIController::register_events() {
     if (!ui_manager_) {
         return;
@@ -125,7 +153,7 @@ void ReadyUIController::register_events() {
         }
         UIManager* ui = static_cast<UIManager*>(lv_event_get_user_data(e));
         if (ui && ui->state_machine->is_state(UIState::READY) && ui->ready_controller_) {
-            ui->ready_controller_->toggle_mode();
+            ui->ready_controller_->handle_vertical_swipe(dir == LV_DIR_TOP);
         }
     };
 

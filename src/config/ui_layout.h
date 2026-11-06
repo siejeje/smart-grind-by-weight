@@ -66,11 +66,11 @@
 // round grind button at the bottom (ready / grinding / OTA screens)
 #if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
 #define UI_MAIN_AREA_HEIGHT (HW_DISPLAY_HEIGHT_PX - HW_UI_BUTTON_SIZE_PX - 16)
-#define UI_ARC_DIAMETER_PX 150
+#define UI_ARC_DIAMETER_PX 138
 #define UI_ARC_WIDTH_PX 9
 #define UI_GRIND_PAD_PX 4
 #define UI_GRIND_GAP_PX 6
-#define UI_CHART_HEIGHT_PX 110
+#define UI_CHART_HEIGHT_PX 100
 // Calibration screen label offsets from the screen centre
 #define UI_CAL_TITLE_Y -70
 #define UI_CAL_INSTRUCTION_Y -16
@@ -94,3 +94,12 @@
 // Fonts used for the round grind/pulse button icons
 #define UI_FONT_ICON_GRIND UI_FONT_24
 #define UI_FONT_ICON_PULSE UI_FONT_32
+
+// Top offset for full-height content screens so they clear the status strip
+#ifndef UI_CONTENT_TOP_PX
+#if UI_TOP_INSET_PX > 0
+#define UI_CONTENT_TOP_PX (UI_TOP_INSET_PX - 4)
+#else
+#define UI_CONTENT_TOP_PX 0
+#endif
+#endif

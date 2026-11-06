@@ -46,6 +46,7 @@ void MenuUIController::register_events() {
     EventBridgeLVGL::register_handler(ET::LOGGING_TOGGLE, [this](lv_event_t*) { handle_logging_toggle(); });
 
     EventBridgeLVGL::register_handler(ET::GRIND_MODE_SWIPE_TOGGLE, [this](lv_event_t*) { handle_grind_mode_swipe_toggle(); });
+    EventBridgeLVGL::register_handler(ET::GRIND_PROFILE_SWIPE_TOGGLE, [this](lv_event_t*) { handle_grind_profile_swipe_toggle(); });
     EventBridgeLVGL::register_handler(ET::GRIND_MODE_RADIO_BUTTON, [this](lv_event_t*) { handle_grind_mode_radio_button(); });
     EventBridgeLVGL::register_handler(ET::AUTO_START_TOGGLE, [this](lv_event_t*) { handle_auto_start_toggle(); });
     EventBridgeLVGL::register_handler(ET::AUTO_RETURN_TOGGLE, [this](lv_event_t*) { handle_auto_return_toggle(); });
@@ -313,9 +314,43 @@ void MenuUIController::handle_grind_mode_swipe_toggle() {
     Preferences prefs;
     prefs.begin("swipe", false);
     prefs.putBool("enabled", swipe_enabled);
+    if (swipe_enabled) {
+        prefs.putBool("profiles", false);
+    }
     prefs.end();
 
+    if (swipe_enabled) {
+        if (auto* other = ui_manager_->menu_screen.get_grind_profile_swipe_toggle()) {
+            lv_obj_clear_state(other, LV_STATE_CHECKED);
+        }
+    }
+
     LOG_DEBUG_PRINTLN(swipe_enabled ? "Grind mode swipe gestures enabled" : "Grind mode swipe gestures disabled");
+}
+
+void MenuUIController::handle_grind_profile_swipe_toggle() {
+    if (!ui_manager_) return;
+
+    auto* toggle = ui_manager_->menu_screen.get_grind_profile_swipe_toggle();
+    if (!toggle) return;
+
+    bool profiles_enabled = lv_obj_has_state(toggle, LV_STATE_CHECKED);
+
+    Preferences prefs;
+    prefs.begin("swipe", false);
+    prefs.putBool("profiles", profiles_enabled);
+    if (profiles_enabled) {
+        prefs.putBool("enabled", false);
+    }
+    prefs.end();
+
+    if (profiles_enabled) {
+        if (auto* other = ui_manager_->menu_screen.get_grind_mode_swipe_toggle()) {
+            lv_obj_clear_state(other, LV_STATE_CHECKED);
+        }
+    }
+
+    LOG_DEBUG_PRINTLN(profiles_enabled ? "Profile swipe gestures enabled" : "Profile swipe gestures disabled");
 }
 
 void MenuUIController::handle_grind_mode_radio_button() {

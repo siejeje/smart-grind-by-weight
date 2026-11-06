@@ -4,8 +4,8 @@
 
 void GrindingScreenArc::create() {
     screen = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT);
-    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_set_size(screen, LV_PCT(100), UI_MAIN_AREA_HEIGHT - UI_CONTENT_TOP_PX);
+    lv_obj_align(screen, LV_ALIGN_TOP_MID, 0, UI_CONTENT_TOP_PX);
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0); // Keep transparent
     lv_obj_set_style_border_width(screen, 0, 0);
     lv_obj_set_style_pad_all(screen, UI_GRIND_PAD_PX, 0);
