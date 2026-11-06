@@ -75,3 +75,7 @@ zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
 - **System Info → Last reset:** przyczyna ostatniego restartu (PANIC, TASK WDT, BROWNOUT…) – pomocne przy diagnozie zawieszeń.
 - **Auto-tara po starcie:** ok. 2,5 s po włączeniu, jednorazowo, w tle (bez blokowania ekranu). Tara przy mieleniu i w menu Scale bez zmian.
 - **Grind Settings → gesty pionowe:** „Mode” przełącza Weight/Time, „Profile” przełącza Single/Double/Custom (w górę = następny, w dół = poprzedni). Włączenie jednej opcji wyłącza drugą. W trybie „Profile” gest w górę/dół przesuwa profile w pionie (animacja przesunięcia z wygaszaniem), a gest poziomy przełącza tylko między profilami a MAIN MENU.
+
+## Pamięć (LVGL w PSRAM)
+
+Arduino trzyma każdą alokację < 4 KB w pamięci wewnętrznej, więc obiekty LVGL zajmowały ok. 140 KB z ok. 320 KB wewnętrznej RAM. Po starcie BLE brakowało miejsca na stosy zadań FreeRTOS (start zatrzymywał się z samym podświetleniem) lub na alokacje podczas rysowania (zawieszenie i reset). LVGL korzysta teraz z własnego alokatora w PSRAM (`src/ui/lv_mem_psram.cpp`, `LV_STDLIB_CUSTOM` w `include/lv_conf.h`). W teście w emulatorze QEMU (bez BLE) wolna pamięć wewnętrzna wzrosła z 75 KB do 214 KB. Log startowy pokazuje `Internal heap free` tuż przed tworzeniem zadań.

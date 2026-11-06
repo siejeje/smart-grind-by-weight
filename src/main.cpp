@@ -1,3 +1,4 @@
+#include <esp_heap_caps.h>
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <esp_system.h>
@@ -133,6 +134,10 @@ void setup() {
     bool task_init_success = task_manager.init(&hardware_manager, &state_machine, &profile_controller, 
                                               &grind_controller, &bluetooth_manager, &ui_manager);
     
+    LOG_BLE("[STARTUP] Internal heap free: %u B (largest block %u B), PSRAM free: %u B\n",
+            (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+            (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
+            (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
     if (!task_init_success) {
         LOG_BLE("ERROR: Failed to initialize TaskManager - system cannot start\n");
         while (true) {

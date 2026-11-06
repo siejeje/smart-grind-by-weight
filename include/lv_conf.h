@@ -40,7 +40,11 @@
  * - LV_STDLIB_RTTHREAD:    RT-Thread implementation
  * - LV_STDLIB_CUSTOM:      Implement the functions externally
  */
+#if defined(ARDUINO_ARCH_ESP32) && defined(BOARD_HAS_PSRAM)
+#define LV_USE_STDLIB_MALLOC    LV_STDLIB_CUSTOM   /* PSRAM allocator: src/ui/lv_mem_psram.cpp */
+#else
 #define LV_USE_STDLIB_MALLOC    LV_STDLIB_CLIB
+#endif
 
 /** Possible values
  * - LV_STDLIB_BUILTIN:     LVGL's built in implementation
