@@ -2,6 +2,12 @@
 
 **Turn any grinder into a precision smart grind-by-weight system**
 
+> **About this fork:** this fork adapts Smart Grind-by-Weight to the **Lelit William PL72** grinder, using a
+> **Waveshare ESP32-S3-Touch-LCD-2** (240×320 LCD) board, an HX711 with a MAVIN 1 kg load cell, and a Pololu 5426
+> SSR wired in parallel with the original add/stop button (factory motor controller and mains circuits untouched).
+> Build, wiring and firmware notes: **[docs/LELIT_PL72_LCD2.md](docs/LELIT_PL72_LCD2.md)**.
+> Upstream project: [jaapp/smart-grind-by-weight](https://github.com/jaapp/smart-grind-by-weight).
+
 <table>
 <tr>
 <td width="50%">
