@@ -35,7 +35,7 @@ pio device monitor -b 115200
 | HX711 DOUT | 13 | złącze P2, pin 8 |
 | SSR (Pololu 5426 EN) | 11 | złącze P2, pin 9 |
 | 3V3 / GND | – | złącze P2, piny 1 / 2 (drugi GND: pin 13) |
-| ADC baterii | 5 | dzielnik ×3 (na razie nieużywany w firmware) |
+| ADC baterii | 5 | dzielnik ×3 (wskaźnik baterii) |
 
 **Wszystkie sygnały są na jednym złączu P2** (schemat Waveshare ESP32-S3-Touch-LCD-2_V2). Przed lutowaniem porównaj z opisem na płytce. Nie podłączaj kamery – używa tych samych GPIO. Jeśli wybierzesz inne,
 zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
@@ -69,6 +69,7 @@ zmień je w `hardware.h`. Unikaj pinów strapping 0, 3, 45, 46 i UART0 (43/44).
 ## Pasek stanu, bateria i gesty (LCD2)
 
 - **Pasek u góry na każdym ekranie:** po lewej bieżąca waga, po prawej bateria (%), ostrzeżenie, Bluetooth.
-- **Bateria:** napięcie z GPIO5 (dzielnik 200k/100k, ×3), procent z krzywej Li-ion. Ładowanie z linii CHG_DET (GPIO18, stan wysoki = ładowanie, wg schematu Waveshare V2) – wtedy ikona błyskawicy.
-- **Auto-tara po starcie:** ok. 2,5 s po włączeniu, jednorazowo, gdy waga jest skalibrowana i ekran główny jest aktywny. Tara przy mieleniu i w menu Scale bez zmian.
-- **Grind Settings → gesty pionowe:** „Mode” przełącza Weight/Time, „Profile” przełącza Single/Double/Custom (w górę = następny, w dół = poprzedni). Włączenie jednej opcji wyłącza drugą.
+- **Bateria:** napięcie z GPIO5 (dzielnik 200k/100k, ×3), 16 próbek bez min/max, filtr; procent z krzywej Li-ion z histerezą (przy ładowaniu tylko rośnie, na baterii tylko spada). Ładowanie z linii CHG_DET (GPIO18, stan wysoki = ładowanie) – ikona błyskawicy. Podczas ładowania napięcie na ogniwie jest zawyżone o ~0,1–0,2 V, więc % po odłączeniu ładowarki spada – to normalne.
+- **Kontrola baterii:** Menu → System Info pokazuje `Battery:` (napięcie, %, CHG) i `Batt ADC:` (mV na pinie i przeliczone V). Porównaj z multimetrem na ogniwie; przy różnicy ustaw `HW_BATTERY_VOLTAGE_CAL` w `src/config/hardware.h` (= napięcie z multimetru / napięcie z ekranu). Pełne ładowanie (0,5 A, 2500 mAh) trwa ok. 5 h.
+- **Auto-tara po starcie:** ok. 2,5 s po włączeniu, jednorazowo, w tle (bez blokowania ekranu). Tara przy mieleniu i w menu Scale bez zmian.
+- **Grind Settings → gesty pionowe:** „Mode” przełącza Weight/Time, „Profile” przełącza Single/Double/Custom (w górę = następny, w dół = poprzedni). Włączenie jednej opcji wyłącza drugą. W trybie „Profile” profile są ułożone pionowo (przewijanie w górę/dół z animacją pionową), a gest poziomy przełącza tylko między profilami a MAIN MENU.

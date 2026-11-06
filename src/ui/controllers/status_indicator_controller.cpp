@@ -5,42 +5,13 @@
 #include "../../config/constants.h"
 #include "../../system/diagnostics_controller.h"
 #include "../ui_manager.h"
+#include "../../hardware/battery_monitor.h"
 
 namespace {
 constexpr uint32_t kWeightRefreshMs = 150;
-constexpr uint32_t kBatteryRefreshMs = 2000;
+constexpr uint32_t kBatteryRefreshMs = 1000;
 
 #if defined(HW_HAS_BATTERY_MONITOR)
-// Approximate resting Li-ion (INR18650) open-circuit voltage -> state of charge
-struct SocPoint { float v; int pct; };
-constexpr SocPoint kSocTable[] = {
-    {4.20f, 100}, {4.10f, 90}, {4.00f, 79}, {3.90f, 64}, {3.80f, 48},
-    {3.70f, 31},  {3.60f, 16}, {3.50f, 8},  {3.40f, 3},  {3.30f, 0},
-};
-
-int voltage_to_percent(float v) {
-    if (v >= kSocTable[0].v) return 100;
-    constexpr int n = sizeof(kSocTable) / sizeof(kSocTable[0]);
-    for (int i = 1; i < n; ++i) {
-        if (v >= kSocTable[i].v) {
-            const SocPoint& hi = kSocTable[i - 1];
-            const SocPoint& lo = kSocTable[i];
-            float t = (v - lo.v) / (hi.v - lo.v);
-            return lo.pct + static_cast<int>(lroundf(t * (hi.pct - lo.pct)));
-        }
-    }
-    return 0;
-}
-
-float read_battery_voltage() {
-    uint32_t sum = 0;
-    constexpr int kSamples = 8;
-    for (int i = 0; i < kSamples; ++i) {
-        sum += analogReadMilliVolts(HW_BATTERY_ADC_PIN);
-    }
-    return (static_cast<float>(sum) / kSamples) * HW_BATTERY_DIVIDER_RATIO / 1000.0f;
-}
-
 const char* battery_symbol(int pct) {
     if (pct >= 90) return LV_SYMBOL_BATTERY_FULL;
     if (pct >= 65) return LV_SYMBOL_BATTERY_3;
@@ -79,8 +50,7 @@ void StatusIndicatorController::build() {
     lv_obj_clear_flag(right_group_, LV_OBJ_FLAG_SCROLLABLE);
 
 #if defined(HW_HAS_BATTERY_MONITOR)
-    pinMode(HW_CHARGE_DETECT_PIN, INPUT);
-    analogSetPinAttenuation(HW_BATTERY_ADC_PIN, ADC_11db);
+    BatteryMonitor::init();
     battery_label_ = make_status_label(right_group_, UI_FONT_16, THEME_COLOR_TEXT_PRIMARY);
     lv_label_set_text(battery_label_, "");
 #endif
@@ -120,7 +90,8 @@ void StatusIndicatorController::update_weight_label() {
 
     auto* hw = ui_manager_->hardware_manager;
     auto* sensor = hw ? hw->get_weight_sensor() : nullptr;
-    if (!sensor || !sensor->is_calibrated() || !sensor->is_data_ready()) {
+    // Note: is_data_ready() mirrors the HX711 DOUT line (toggles every sample) - don't use it here
+    if (!sensor || !sensor->is_calibrated() || sensor->get_sample_count() <= 0) {
         if (last_weight_decigrams_ != INT32_MIN) {
             lv_label_set_text(weight_label_, "");
             last_weight_decigrams_ = INT32_MIN;
@@ -155,10 +126,13 @@ void StatusIndicatorController::update_battery() {
     }
     last_battery_update_ms_ = now;
 
-    float v = read_battery_voltage();
-    battery_voltage_ = (battery_voltage_ <= 0.0f) ? v : (battery_voltage_ * 0.8f + v * 0.2f);
-    bool charging = digitalRead(HW_CHARGE_DETECT_PIN) == HIGH;
-    int pct = voltage_to_percent(battery_voltage_);
+    BatteryMonitor::update();
+    battery_voltage_ = BatteryMonitor::voltage();
+    bool charging = BatteryMonitor::charging();
+    int pct = BatteryMonitor::percent();
+    if (pct < 0) {
+        return;
+    }
 
     if (pct == last_battery_percent_ && charging == last_charging_) {
         return;

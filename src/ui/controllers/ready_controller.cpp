@@ -102,6 +102,17 @@ void ReadyUIController::toggle_mode() {
     }
 }
 
+void ReadyUIController::apply_swipe_layout() {
+    if (!ui_manager_) {
+        return;
+    }
+    Preferences prefs;
+    prefs.begin("swipe", true);
+    bool swipe_profiles = prefs.getBool("profiles", false);
+    prefs.end();
+    ui_manager_->ready_screen.set_vertical_profiles(swipe_profiles, ui_manager_->current_tab);
+}
+
 void ReadyUIController::handle_vertical_swipe(bool up) {
     if (!ui_manager_ || ui_manager_->current_tab >= 3) {
         return;
@@ -123,10 +134,7 @@ void ReadyUIController::handle_vertical_swipe(bool up) {
     if (next >= kProfileTabs) next = 0;
     if (next < 0) next = kProfileTabs - 1;
 
-    lv_obj_t* tabview = ui_manager_->ready_screen.get_tabview();
-    if (tabview) {
-        lv_tabview_set_active(tabview, static_cast<uint32_t>(next), LV_ANIM_ON);
-    }
+    ui_manager_->ready_screen.set_active_tab(next);
     handle_tab_change(next);
 }
 
@@ -169,12 +177,14 @@ void ReadyUIController::register_events() {
                                       [this](lv_event_t* event) {
                                           lv_obj_t* tabview_obj = static_cast<lv_obj_t*>(lv_event_get_target(event));
                                           uint32_t tab_id = lv_tabview_get_tab_act(tabview_obj);
-                                          handle_tab_change(static_cast<int>(tab_id));
+                                          handle_tab_change(ui_manager_->ready_screen.logical_tab_from_tabview(static_cast<int>(tab_id)));
                                       });
 
     EventBridgeLVGL::register_handler(EventBridgeLVGL::EventType::PROFILE_LONG_PRESS,
                                       [this](lv_event_t*) { handle_profile_long_press(); });
 
     ui_manager_->ready_screen.set_profile_long_press_handler(EventBridgeLVGL::profile_long_press_handler);
+
+    apply_swipe_layout();
 
 }

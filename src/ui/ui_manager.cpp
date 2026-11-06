@@ -197,7 +197,7 @@ void UIManager::update_boot_tare() {
     }
 
     auto* sensor = hardware_manager ? hardware_manager->get_weight_sensor() : nullptr;
-    if (!sensor || !sensor->is_calibrated() || !sensor->is_data_ready() || sensor->is_tare_in_progress()) {
+    if (!sensor || !sensor->is_calibrated() || sensor->get_sample_count() <= 0 || sensor->is_tare_in_progress()) {
         return;
     }
     if (!state_machine || !state_machine->is_state(UIState::READY)) {
@@ -205,8 +205,10 @@ void UIManager::update_boot_tare() {
     }
 
     boot_tare_done_ = true;
-    LOG_BLE("[STARTUP] Automatic boot tare\n");
-    UIOperations::execute_tare(hardware_manager);
+    LOG_BLE("[STARTUP] Automatic boot tare (background)\n");
+    // Non-blocking: the sampling task on core 0 averages fresh samples and sets the new
+    // zero offset; the UI stays usable and no overlay is shown.
+    sensor->start_nonblocking_tare();
 }
 
 void UIManager::switch_to_state(UIState new_state) {

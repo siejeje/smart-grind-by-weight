@@ -39,8 +39,35 @@ void ReadyScreen::create() {
     const char* names[3] = {"SINGLE", "DOUBLE", "CUSTOM"};
     
     for (int i = 0; i < 3; i++) {
-        create_profile_page(profile_tabs[i], i, names[i], default_weights[i]);
+        // Each profile lives in a "card" that can be moved between the horizontal tab
+        // pages and the vertical pager without rebuilding its widgets.
+        lv_obj_t* card = lv_obj_create(profile_tabs[i]);
+        lv_obj_remove_style_all(card);
+        lv_obj_set_size(card, LV_PCT(100), LV_PCT(100));
+        lv_obj_clear_flag(card, LV_OBJ_FLAG_SCROLLABLE);
+        lv_obj_add_flag(card, LV_OBJ_FLAG_GESTURE_BUBBLE);
+        lv_obj_add_flag(card, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+        lv_obj_add_flag(card, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
+        profile_cards[i] = card;
+        create_profile_page(card, i, names[i], default_weights[i]);
+        lv_obj_clear_flag(profile_tabs[i], LV_OBJ_FLAG_SCROLLABLE);
     }
+
+    // Vertical pager (hidden until "Profile swipe" is enabled)
+    vertical_container = lv_obj_create(profile_tabs[0]);
+    lv_obj_remove_style_all(vertical_container);
+    lv_obj_set_size(vertical_container, LV_PCT(100), LV_PCT(100));
+    lv_obj_set_flex_flow(vertical_container, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_scroll_dir(vertical_container, LV_DIR_VER);
+    lv_obj_set_scroll_snap_y(vertical_container, LV_SCROLL_SNAP_CENTER);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_ONE);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+    lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
+    lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_SCROLL_ELASTIC);
+    lv_obj_set_scrollbar_mode(vertical_container, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_GESTURE_BUBBLE);
+    lv_obj_add_event_cb(vertical_container, vertical_scroll_end_cb, LV_EVENT_SCROLL_END, this);
+    lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_HIDDEN);
 
     // Create menu tab page
     create_menu_page(menu_tab);
@@ -102,8 +129,75 @@ void ReadyScreen::update_profile_values(const float values[3], GrindMode mode) {
 }
 
 void ReadyScreen::set_active_tab(int tab) {
-    if (tab >= 0 && tab < 4) {
+    if (tab < 0 || tab >= 4) {
+        return;
+    }
+    if (!vertical_profiles) {
         lv_tabview_set_act(tabview, tab, LV_ANIM_OFF);
+        return;
+    }
+    if (tab < 3) {
+        vertical_profile_index = tab;
+        lv_tabview_set_act(tabview, 0, LV_ANIM_OFF);
+        lv_obj_update_layout(vertical_container);
+        lv_obj_scroll_to_y(vertical_container, tab * lv_obj_get_content_height(vertical_container), LV_ANIM_OFF);
+    } else {
+        lv_tabview_set_act(tabview, 1, LV_ANIM_OFF);  // MENU is the second visible page
+    }
+}
+
+int ReadyScreen::logical_tab_from_tabview(int physical) const {
+    if (!vertical_profiles) {
+        return physical;
+    }
+    return (physical == 0) ? vertical_profile_index : 3;
+}
+
+void ReadyScreen::set_vertical_profiles(bool enabled, int active_tab) {
+    if (enabled == vertical_profiles) {
+        set_active_tab(active_tab);
+        return;
+    }
+    vertical_profiles = enabled;
+    if (enabled) {
+        lv_obj_clear_flag(vertical_container, LV_OBJ_FLAG_HIDDEN);
+        for (int i = 0; i < 3; i++) {
+            lv_obj_set_parent(profile_cards[i], vertical_container);
+        }
+        // Hidden tab pages are skipped by the flex layout: pages become [profiles][MENU]
+        lv_obj_add_flag(profile_tabs[1], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(profile_tabs[2], LV_OBJ_FLAG_HIDDEN);
+    } else {
+        for (int i = 0; i < 3; i++) {
+            lv_obj_set_parent(profile_cards[i], profile_tabs[i]);
+        }
+        lv_obj_add_flag(vertical_container, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(profile_tabs[1], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(profile_tabs[2], LV_OBJ_FLAG_HIDDEN);
+    }
+    lv_obj_update_layout(tabview);
+    set_active_tab(active_tab);
+}
+
+void ReadyScreen::vertical_scroll_end_cb(lv_event_t* e) {
+    ReadyScreen* self = static_cast<ReadyScreen*>(lv_event_get_user_data(e));
+    if (!self || !self->vertical_profiles) {
+        return;
+    }
+    lv_obj_t* cont = self->vertical_container;
+    int32_t h = lv_obj_get_content_height(cont);
+    if (h <= 0) {
+        return;
+    }
+    lv_point_t end;
+    lv_obj_get_scroll_end(cont, &end);
+    int idx = (end.y + h / 2) / h;
+    if (idx < 0) idx = 0;
+    if (idx > 2) idx = 2;
+    if (idx != self->vertical_profile_index) {
+        self->vertical_profile_index = idx;
+        // Reuse the existing TAB_CHANGE pipeline (handler maps the index via logical_tab_from_tabview)
+        lv_obj_send_event(self->tabview, LV_EVENT_VALUE_CHANGED, NULL);
     }
 }
 

@@ -325,6 +325,7 @@ void MenuUIController::handle_grind_mode_swipe_toggle() {
         }
     }
 
+    if (ui_manager_->ready_controller_) ui_manager_->ready_controller_->apply_swipe_layout();
     LOG_DEBUG_PRINTLN(swipe_enabled ? "Grind mode swipe gestures enabled" : "Grind mode swipe gestures disabled");
 }
 
@@ -350,6 +351,7 @@ void MenuUIController::handle_grind_profile_swipe_toggle() {
         }
     }
 
+    if (ui_manager_->ready_controller_) ui_manager_->ready_controller_->apply_swipe_layout();
     LOG_DEBUG_PRINTLN(profiles_enabled ? "Profile swipe gestures enabled" : "Profile swipe gestures disabled");
 }
 

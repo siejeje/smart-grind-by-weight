@@ -5,6 +5,7 @@
 #include "../../logging/grind_logging.h"
 #include "../../system/statistics_manager.h"
 #include "../../hardware/hardware_manager.h"
+#include "../../hardware/battery_monitor.h"
 #include "grinding_screen.h"
 #include "../event_bridge_lvgl.h"
 #include "../../config/logging.h"
@@ -264,6 +265,10 @@ void MenuScreen::create_info_page(lv_obj_t* parent) {
    
     create_data_label(parent, "Uptime:", &uptime_label);
     create_data_label(parent, "RAM:", &memory_label);
+#if defined(HW_HAS_BATTERY_MONITOR)
+    create_data_label(parent, "Battery:", &battery_info_label);
+    create_data_label(parent, "Batt ADC:", &battery_adc_label);
+#endif
 }
 
 
@@ -670,6 +675,17 @@ void MenuScreen::update_info(const WeightSensor* weight_sensor, unsigned long up
     lv_label_set_text(uptime_label, uptime_text);
 
     set_label_text_int(memory_label, free_heap / 1024, "kB");
+
+#if defined(HW_HAS_BATTERY_MONITOR)
+    if (battery_info_label && BatteryMonitor::available()) {
+        char bt[40];
+        snprintf(bt, sizeof(bt), "%.2fV %d%%%s", BatteryMonitor::voltage(), BatteryMonitor::percent(),
+                 BatteryMonitor::charging() ? " CHG" : "");
+        lv_label_set_text(battery_info_label, bt);
+        snprintf(bt, sizeof(bt), "%dmV (%.2fV)", BatteryMonitor::adc_millivolts(), BatteryMonitor::raw_voltage());
+        lv_label_set_text(battery_adc_label, bt);
+    }
+#endif
 }
 
 void MenuScreen::update_diagnostics(WeightSensor* weight_sensor) {

@@ -33,6 +33,7 @@
 #define HW_BATTERY_DIVIDER_RATIO 3.0f                                          // VBAT = ADC * (200k+100k)/100k
 #define HW_CHARGE_DETECT_PIN 18                                                // CHG_DET: HIGH while ETA6098 is charging (10k pull-up, Q2 inverts STAT)
 #define HW_HAS_BATTERY_MONITOR 1
+#define HW_BATTERY_VOLTAGE_CAL 1.0f                                            // Multimeter VBAT / displayed VBAT (System Info), tweak if they differ
 #else
 // Touch Controller (I2C)
 #define HW_TOUCH_I2C_SDA_PIN 47                                                // I2C data pin for capacitive touch controller
