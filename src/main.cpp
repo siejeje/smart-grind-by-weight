@@ -1,3 +1,4 @@
+#include <esp_heap_caps.h>
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <esp_system.h>
@@ -32,6 +33,12 @@ static uint32_t core1_last_heartbeat_time = 0;
 #endif
 
 void setup() {
+    // SAFETY: force the grinder control output LOW as the very first action after
+    // reset, before any other subsystem initializes. (An external pull-down on the
+    // relay EN line keeps it LOW during the boot ROM phase.)
+    pinMode(HW_MOTOR_RELAY_PIN, OUTPUT);
+    digitalWrite(HW_MOTOR_RELAY_PIN, LOW);
+
     Serial.begin(HW_SERIAL_BAUD_RATE);
 #ifdef UI_DEBUG_SERIAL_DELAY_MS
     delay(UI_DEBUG_SERIAL_DELAY_MS);
@@ -127,6 +134,10 @@ void setup() {
     bool task_init_success = task_manager.init(&hardware_manager, &state_machine, &profile_controller, 
                                               &grind_controller, &bluetooth_manager, &ui_manager);
     
+    LOG_BLE("[STARTUP] Internal heap free: %u B (largest block %u B), PSRAM free: %u B\n",
+            (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+            (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
+            (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
     if (!task_init_success) {
         LOG_BLE("ERROR: Failed to initialize TaskManager - system cannot start\n");
         while (true) {

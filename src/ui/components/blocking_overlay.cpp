@@ -33,13 +33,13 @@ void BlockingOperationOverlay::init() {
     
     // Create main label
     label = lv_label_create(content);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_32, 0);
+    lv_obj_set_style_text_font(label, UI_FONT_32, 0);
     lv_obj_set_style_text_color(label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
 
     lv_obj_t * wait_label = lv_label_create(content);
     lv_label_set_text(wait_label, "Please Wait...");
-    lv_obj_set_style_text_font(wait_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(wait_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(wait_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_text_align(wait_label, LV_TEXT_ALIGN_CENTER, 0);
     
@@ -58,7 +58,7 @@ void BlockingOperationOverlay::show_and_execute(BlockingOperation op_type,
     const char* message = get_operation_message(op_type, custom_message);
     lv_label_set_text(label, message);
     lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(label, 240);
+    lv_obj_set_width(label, HW_UI_CONTENT_WIDTH_PX - 40);
     
     // Store callbacks
     completion_callback = completion_func;

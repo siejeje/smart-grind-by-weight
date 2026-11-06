@@ -9,6 +9,7 @@ void ConfirmScreen::create() {
     lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(screen, 0, 0);
     lv_obj_set_style_pad_ver(screen, 6, 0);
+    lv_obj_set_style_pad_top(screen, 6 + UI_TOP_INSET_PX, 0);
     lv_obj_set_style_pad_hor(screen, 0, 0);
     lv_obj_set_style_pad_gap(screen, 5, 0);
     
@@ -19,7 +20,7 @@ void ConfirmScreen::create() {
     
     // Title label
     title_label = lv_label_create(screen);
-    lv_obj_set_style_text_font(title_label, &lv_font_montserrat_36, 0);
+    lv_obj_set_style_text_font(title_label, UI_FONT_36, 0);
     lv_obj_set_style_text_align(title_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_width(title_label, LV_PCT(100));
     // Title takes only the space it needs
@@ -40,7 +41,7 @@ void ConfirmScreen::create() {
 
     // Create the actual message label inside the container
     message_label = lv_label_create(message_container);
-    lv_obj_set_style_text_font(message_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(message_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(message_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(message_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_width(message_label, LV_PCT(100));

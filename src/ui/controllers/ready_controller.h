@@ -16,6 +16,8 @@ public:
     void handle_tab_change(int tab);
     void handle_profile_long_press();
     void toggle_mode();
+    void handle_vertical_swipe(bool up);
+    void apply_swipe_layout();  // re-read swipe prefs and switch ready-screen layout
 
 private:
     UIManager* ui_manager_;

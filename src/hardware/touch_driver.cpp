@@ -82,7 +82,7 @@ void TouchDriver::update() {
     }
     
     uint8_t buf[5] = {0};
-    uint8_t reg = 0x02; // FT3168_REG_NUM_TOUCHES
+    uint8_t reg = 0x02; // FT3168 / CST816D: num touches, then XH, XL, YH, YL (same layout)
     esp_err_t err = i2c_master_transmit_receive(device_handle, &reg, sizeof(reg), buf, sizeof(buf), kTouchI2CTimeoutMs);
     if (err != ESP_OK) {
         // Touch controller NACKs when no touch data - treat as no-touch without logging.

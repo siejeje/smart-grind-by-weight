@@ -1,10 +1,12 @@
 #include "menu_screen.h"
 #include <Arduino.h>
+#include <esp_system.h>
 #include <algorithm>
 #include "../../config/constants.h"
 #include "../../logging/grind_logging.h"
 #include "../../system/statistics_manager.h"
 #include "../../hardware/hardware_manager.h"
+#include "../../hardware/battery_monitor.h"
 #include "grinding_screen.h"
 #include "../event_bridge_lvgl.h"
 #include "../../config/logging.h"
@@ -73,18 +75,30 @@ void MenuScreen::create_menu_ui() {
     lv_obj_set_layout(header, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(header, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(header, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_coord_t title_base_height = lv_font_get_line_height(&lv_font_montserrat_36);
+    lv_coord_t title_base_height = lv_font_get_line_height(UI_MENU_TITLE_FONT);
+#if UI_TOP_INSET_PX > 0
+    // Small screen: keep the title compact and push it below the status icons
+    lv_coord_t title_target_height = title_base_height;
+    lv_coord_t title_padding = 0;
+    lv_obj_set_style_min_height(header, title_target_height + UI_TOP_INSET_PX, 0);
+    lv_obj_set_style_pad_top(header, UI_TOP_INSET_PX - 2, 0);
+    lv_obj_set_style_pad_bottom(header, 4, 0);
+    lv_obj_set_style_pad_hor(header, 4, 0);
+#else
     lv_coord_t title_target_height = (title_base_height * 3) / 2; // ~50% taller
     lv_coord_t title_padding = (title_target_height - title_base_height) / 2;
     lv_obj_set_style_min_height(header, title_target_height, 0);
     lv_obj_set_style_pad_top(header, title_padding, 0);
     lv_obj_set_style_pad_bottom(header, title_padding, 0);
+#endif
 
     // Get the header label
     lv_obj_t* header_label = lv_obj_get_child(header, -1);
     if (header_label) {
         lv_obj_set_style_text_align(header_label, LV_TEXT_ALIGN_CENTER, 0);
-        lv_obj_set_style_text_font(header_label, &lv_font_montserrat_36, 0);
+        lv_obj_set_style_text_font(header_label, UI_MENU_TITLE_FONT, 0);
+        lv_obj_set_flex_grow(header_label, 1);
+        lv_label_set_long_mode(header_label, LV_LABEL_LONG_DOT);
         lv_obj_set_style_text_color(header_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
         lv_obj_set_style_min_height(header_label, title_target_height, 0);
         lv_obj_set_style_pad_top(header_label, title_padding, 0);
@@ -92,8 +106,8 @@ void MenuScreen::create_menu_ui() {
     }
     // Get and style the chevron first
     lv_obj_t* back_chevron = lv_menu_get_main_header_back_button(menu);
-    lv_obj_set_style_text_font(back_chevron, &lv_font_montserrat_32, 0);
-    lv_obj_set_ext_click_area(back_chevron, 200);
+    lv_obj_set_style_text_font(back_chevron, UI_FONT_32, 0);
+    lv_obj_set_ext_click_area(back_chevron, UI_SX(200));
     lv_obj_set_style_text_color(back_chevron, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_min_height(back_chevron, title_target_height, 0);
     lv_obj_set_style_pad_top(back_chevron, title_padding, 0);
@@ -252,6 +266,11 @@ void MenuScreen::create_info_page(lv_obj_t* parent) {
    
     create_data_label(parent, "Uptime:", &uptime_label);
     create_data_label(parent, "RAM:", &memory_label);
+    create_data_label(parent, "Last reset:", &reset_reason_label);
+#if defined(HW_HAS_BATTERY_MONITOR)
+    create_data_label(parent, "Battery:", &battery_info_label);
+    create_data_label(parent, "Batt ADC:", &battery_adc_label);
+#endif
 }
 
 
@@ -270,14 +289,14 @@ void MenuScreen::create_bluetooth_page(lv_obj_t* parent) {
     // BLE Status label
     ble_status_label = lv_label_create(parent);
     lv_label_set_text(ble_status_label, "Bluetooth: Disabled");
-    lv_obj_set_style_text_font(ble_status_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(ble_status_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(ble_status_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_clear_flag(ble_status_label, LV_OBJ_FLAG_SCROLLABLE);
 
     // BLE Timer label
     ble_timer_label = lv_label_create(parent);
     lv_label_set_text(ble_timer_label, "");
-    lv_obj_set_style_text_font(ble_timer_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(ble_timer_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(ble_timer_label, lv_color_hex(THEME_COLOR_WARNING), 0);
     lv_obj_clear_flag(ble_timer_label, LV_OBJ_FLAG_SCROLLABLE);
 
@@ -353,22 +372,23 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
         2,
         LV_FLEX_FLOW_ROW,
         0,  // Weight initially selected
-        135, 100,  // Width, Height
+        -1, UI_SY(100),  // Width (auto), Height
         grind_mode_callback,
         this
     );
 
     // Descriptive label for swipe functionality
     lv_obj_t* swipe_desc_label = lv_label_create(parent);
-    lv_label_set_text(swipe_desc_label, "Enable swiping vertically to switch between Weight/Time modes");
-    lv_obj_set_style_text_font(swipe_desc_label, &lv_font_montserrat_24, 0);
+    lv_label_set_text(swipe_desc_label, "Vertical swipe on the main screen. Mode: Weight/Time. Profile: Single / Double / Custom.");
+    lv_obj_set_style_text_font(swipe_desc_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(swipe_desc_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_margin_bottom(swipe_desc_label, 10, 0);
     lv_label_set_long_mode(swipe_desc_label, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(swipe_desc_label, 260);
+    lv_obj_set_width(swipe_desc_label, HW_UI_CONTENT_WIDTH_PX - 20);
 
     // Swipe toggle using existing pattern
-    create_toggle_row(parent, "Swipe", &grind_mode_swipe_toggle);
+    create_toggle_row(parent, "Mode", &grind_mode_swipe_toggle);
+    create_toggle_row(parent, "Profile", &grind_profile_swipe_toggle);
 
     // Automatic actions section
     create_separator(parent, "Automation");
@@ -389,7 +409,7 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
         2,
         LV_FLEX_FLOW_ROW,
         1,  // Purge initially selected (index 1)
-        135, 100,  // Width, Height
+        -1, UI_SY(100),  // Width (auto), Height
         grinder_purge_mode_callback,
         this
     );
@@ -413,6 +433,10 @@ void MenuScreen::create_grind_mode_page(lv_obj_t* parent) {
     if (grind_mode_swipe_toggle) {
         lv_obj_add_event_cb(grind_mode_swipe_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
                            reinterpret_cast<void*>(static_cast<intptr_t>(ET::GRIND_MODE_SWIPE_TOGGLE)));
+    }
+    if (grind_profile_swipe_toggle) {
+        lv_obj_add_event_cb(grind_profile_swipe_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
+                           reinterpret_cast<void*>(static_cast<intptr_t>(ET::GRIND_PROFILE_SWIPE_TOGGLE)));
     }
     if (auto_start_toggle) {
         lv_obj_add_event_cb(auto_start_toggle, EventBridgeLVGL::dispatch_event, LV_EVENT_VALUE_CHANGED,
@@ -440,19 +464,19 @@ void MenuScreen::create_scale_page(lv_obj_t* parent) {
     lv_obj_set_layout(parent, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(parent, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_set_style_pad_all(parent, 24, 0);
-    lv_obj_set_style_pad_gap(parent, 28, 0);
+    lv_obj_set_style_pad_all(parent, UI_SY(24), 0);
+    lv_obj_set_style_pad_gap(parent, UI_SY(28), 0);
     lv_obj_set_scrollbar_mode(parent, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_bg_opa(parent, LV_OPA_TRANSP, 0);
 
     lv_obj_t* subtitle = lv_label_create(parent);
     lv_label_set_text(subtitle, "Live weight");
-    lv_obj_set_style_text_font(subtitle, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(subtitle, UI_FONT_24, 0);
     lv_obj_set_style_text_color(subtitle, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
 
     scale_weight_label = lv_label_create(parent);
     lv_label_set_text(scale_weight_label, "0.0g");
-    lv_obj_set_style_text_font(scale_weight_label, &lv_font_montserrat_56, 0);
+    lv_obj_set_style_text_font(scale_weight_label, UI_FONT_56, 0);
     lv_obj_set_style_text_color(scale_weight_label, lv_color_hex(THEME_COLOR_TEXT_PRIMARY), 0);
     lv_obj_set_style_text_align(scale_weight_label, LV_TEXT_ALIGN_CENTER, 0);
 
@@ -462,7 +486,7 @@ void MenuScreen::create_scale_page(lv_obj_t* parent) {
     lv_obj_set_style_border_width(spacer, 0, 0);
     lv_obj_set_flex_grow(spacer, 1);
 
-    scale_tare_button = create_button(parent, "TARE", lv_color_hex(THEME_COLOR_PRIMARY), 260, 80, &lv_font_montserrat_28);
+    scale_tare_button = create_button(parent, "TARE", lv_color_hex(THEME_COLOR_PRIMARY), UI_SX(260), UI_SY(80), UI_FONT_28);
     using ET = EventBridgeLVGL::EventType;
     if (scale_tare_button) {
         lv_obj_add_event_cb(scale_tare_button, EventBridgeLVGL::dispatch_event, LV_EVENT_CLICKED,
@@ -565,12 +589,12 @@ void MenuScreen::create_diagnostics_page(lv_obj_t* parent) {
     // Info label (only shown when not calibrated)
     diag_info_label = lv_label_create(parent);
     lv_label_set_text(diag_info_label, "");
-    lv_obj_set_style_text_font(diag_info_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(diag_info_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(diag_info_label, lv_color_hex(THEME_COLOR_WARNING), 0);
     lv_obj_set_style_margin_top(diag_info_label, 10, 0);
     lv_obj_set_style_margin_bottom(diag_info_label, 10, 0);
     lv_label_set_long_mode(diag_info_label, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(diag_info_label, 260);
+    lv_obj_set_width(diag_info_label, HW_UI_CONTENT_WIDTH_PX - UI_SX(20));
     lv_obj_add_flag(diag_info_label, LV_OBJ_FLAG_HIDDEN); // Hidden by default
 
     diag_reset_button = create_button(parent, "Reset Diagnostics", lv_color_hex(THEME_COLOR_WARNING));
@@ -587,11 +611,11 @@ void MenuScreen::create_diagnostics_page(lv_obj_t* parent) {
     // Static info label about calibration dependency
     lv_obj_t* cal_info = lv_label_create(parent);
     lv_label_set_text(cal_info, "Noise level readings depend on proper calibration.");
-    lv_obj_set_style_text_font(cal_info, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(cal_info, UI_FONT_24, 0);
     lv_obj_set_style_text_color(cal_info, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_margin_top(cal_info, 10, 0);
     lv_label_set_long_mode(cal_info, LV_LABEL_LONG_WRAP);
-    lv_obj_set_width(cal_info, 260);
+    lv_obj_set_width(cal_info, HW_UI_CONTENT_WIDTH_PX - UI_SX(20));
 
     // Motor Response separator
     create_separator(parent, "Motor Response");
@@ -653,6 +677,38 @@ void MenuScreen::update_info(const WeightSensor* weight_sensor, unsigned long up
     lv_label_set_text(uptime_label, uptime_text);
 
     set_label_text_int(memory_label, free_heap / 1024, "kB");
+
+    if (reset_reason_label) {
+        const char* rr = "OTHER";
+        switch (esp_reset_reason()) {
+            case ESP_RST_POWERON: rr = "POWER ON"; break;
+            case ESP_RST_SW: rr = "SOFTWARE"; break;
+            case ESP_RST_PANIC: rr = "PANIC"; break;
+            case ESP_RST_INT_WDT: rr = "INT WDT"; break;
+            case ESP_RST_TASK_WDT: rr = "TASK WDT"; break;
+            case ESP_RST_WDT: rr = "WDT"; break;
+            case ESP_RST_BROWNOUT: rr = "BROWNOUT"; break;
+            case ESP_RST_USB: rr = "USB"; break;
+            default: break;
+        }
+        lv_label_set_text(reset_reason_label, rr);
+    }
+
+#if defined(HW_HAS_BATTERY_MONITOR)
+    if (battery_info_label && BatteryMonitor::available()) {
+        char bt[40];
+        if (BatteryMonitor::usb_only()) {
+            snprintf(bt, sizeof(bt), "USB only%s", BatteryMonitor::charging() ? " CHG" : "");
+        } else {
+            snprintf(bt, sizeof(bt), "%.2fV %d%%%s", BatteryMonitor::voltage(), BatteryMonitor::percent(),
+                     BatteryMonitor::charging() ? " CHG" : "");
+        }
+        lv_label_set_text(battery_info_label, bt);
+        snprintf(bt, sizeof(bt), "%.2fV d%.2f t%d", BatteryMonitor::raw_voltage(), BatteryMonitor::vbat_spread(),
+                 BatteryMonitor::chg_toggles());
+        lv_label_set_text(battery_adc_label, bt);
+    }
+#endif
 }
 
 void MenuScreen::update_diagnostics(WeightSensor* weight_sensor) {
@@ -935,7 +991,7 @@ lv_obj_t* MenuScreen::create_separator(lv_obj_t* parent, const char* text) {
     // Create text label
     lv_obj_t* separator_label = lv_label_create(separator_container);
     lv_label_set_text(separator_label, text);
-    lv_obj_set_style_text_font(separator_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(separator_label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(separator_label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_obj_set_style_pad_left(separator_label, 10, 0);
     lv_obj_set_style_pad_right(separator_label, 10, 0);
@@ -1022,7 +1078,7 @@ lv_obj_t* MenuScreen::create_toggle_row(lv_obj_t* parent, const char* text, lv_o
     lv_label_set_text(label, text);
 
     *out_toggle = lv_switch_create(row_container);
-    lv_obj_set_size(*out_toggle, 80, 40);
+    lv_obj_set_size(*out_toggle, UI_SX(80), UI_SY(40));
     lv_obj_set_ext_click_area(*out_toggle, 20);
     
     return row_container;
@@ -1031,21 +1087,21 @@ lv_obj_t* MenuScreen::create_toggle_row(lv_obj_t* parent, const char* text, lv_o
 
 lv_obj_t* MenuScreen::create_slider_row(lv_obj_t* parent, const char* text, lv_obj_t** label, lv_obj_t** slider, lv_color_t slider_color, uint32_t min, uint32_t max) {
     lv_obj_t* row_container = lv_obj_create(parent);
-    style_as_button(row_container, 260, LV_SIZE_CONTENT);
+    style_as_button(row_container, UI_SX(260), LV_SIZE_CONTENT);
     lv_obj_set_style_margin_bottom(row_container, 10, 0);
     // Set layout
 
     lv_obj_set_layout(row_container, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(row_container, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(row_container, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_set_style_pad_gap(row_container, 14, 0);
-    lv_obj_set_style_pad_all(row_container, 20, 0);
+    lv_obj_set_style_pad_gap(row_container, UI_SY(14), 0);
+    lv_obj_set_style_pad_all(row_container, UI_SX(20), 0);
 
     *label = lv_label_create(row_container);
     lv_label_set_text(*label, text);
 
     *slider = lv_slider_create(row_container);
-    lv_obj_set_size(*slider, 220, 40);
+    lv_obj_set_size(*slider, LV_PCT(100), UI_SY(40));
     lv_obj_set_ext_click_area(*slider, 20);
     lv_slider_set_range(*slider, min, max);
     lv_obj_set_style_bg_color(*slider, lv_color_hex(THEME_COLOR_BACKGROUND), LV_PART_MAIN);
@@ -1073,15 +1129,15 @@ lv_obj_t* MenuScreen::create_description_label(lv_obj_t* parent, const char* tex
     lv_obj_set_style_pad_all(container, 0, 0);
     lv_obj_set_style_pad_left(container, 10, 0);
     lv_obj_set_style_pad_right(container, 14, 0);
-    lv_obj_set_style_margin_top(container, 12, 0);
-    lv_obj_set_style_margin_bottom(container, 12, 0);
-    lv_obj_set_size(container, 280, LV_SIZE_CONTENT);
+    lv_obj_set_style_margin_top(container, UI_SY(12), 0);
+    lv_obj_set_style_margin_bottom(container, UI_SY(12), 0);
+    lv_obj_set_size(container, HW_UI_CONTENT_WIDTH_PX, LV_SIZE_CONTENT);
     lv_obj_clear_flag(container, LV_OBJ_FLAG_SCROLLABLE);
 
     // Create label inside container
     lv_obj_t* label = lv_label_create(container);
     lv_label_set_text(label, text);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_font(label, UI_FONT_24, 0);
     lv_obj_set_style_text_color(label, lv_color_hex(THEME_COLOR_TEXT_SECONDARY), 0);
     lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
     lv_obj_set_width(label, LV_PCT(100));
@@ -1109,7 +1165,9 @@ void MenuScreen::update_grind_mode_toggles() {
     Preferences swipe_prefs;
     swipe_prefs.begin("swipe", true); // read-only
     bool swipe_enabled = swipe_prefs.getBool("enabled", false);
+    bool swipe_profiles = swipe_prefs.getBool("profiles", false);
     swipe_prefs.end();
+    if (swipe_profiles) swipe_enabled = false;  // options are mutually exclusive
 
     // Read current grind mode from main grinder preferences using hardware manager
     int mode_index = 0; // Default to Weight (index 0)
@@ -1134,6 +1192,13 @@ void MenuScreen::update_grind_mode_toggles() {
             lv_obj_add_state(grind_mode_swipe_toggle, LV_STATE_CHECKED);
         } else {
             lv_obj_clear_state(grind_mode_swipe_toggle, LV_STATE_CHECKED);
+        }
+    }
+    if (grind_profile_swipe_toggle) {
+        if (swipe_profiles) {
+            lv_obj_add_state(grind_profile_swipe_toggle, LV_STATE_CHECKED);
+        } else {
+            lv_obj_clear_state(grind_profile_swipe_toggle, LV_STATE_CHECKED);
         }
     }
 

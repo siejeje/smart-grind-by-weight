@@ -139,6 +139,8 @@ public:
 private:
     void create_ui();
     void update_auto_actions();
+    void update_boot_tare();
+    bool boot_tare_done_ = false;
     
     // State-specific update methods
 

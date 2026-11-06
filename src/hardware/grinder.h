@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <driver/rmt_tx.h>
 #include <driver/rmt_encoder.h>
+#include <esp_timer.h>
 #include <functional>
 #include "../config/constants.h"
 
@@ -30,6 +31,13 @@ private:
 
     void emit_background_change(bool active);
 
+    // Independent hard limit for one continuous motor activation
+    esp_timer_handle_t safety_timer = nullptr;
+    volatile bool safety_tripped = false;
+    void arm_safety_timer();
+    void disarm_safety_timer();
+    static void safety_timer_cb(void* arg);
+
 public:
     void init(int pin);
     void start();
@@ -42,6 +50,7 @@ public:
     bool is_grinding() const { return grinding; }
     bool is_initialized() const { return initialized; }
     bool is_motor_settled() const;
+    bool was_safety_tripped() const { return safety_tripped; }
 
     // Background indicator setup (always compiled in)
     void set_ui_event_callback(const std::function<void(const GrindEventData&)>& callback);

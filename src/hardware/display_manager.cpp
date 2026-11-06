@@ -12,6 +12,19 @@ void DisplayManager::init() {
     g_display_manager = this;
     
     // Initialize display hardware
+#if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
+    // Backlight off until the panel is initialized (avoids white flash)
+    ledcAttach(HW_DISPLAY_BACKLIGHT_PIN, HW_DISPLAY_BACKLIGHT_PWM_FREQ_HZ, HW_DISPLAY_BACKLIGHT_PWM_BITS);
+    ledcWrite(HW_DISPLAY_BACKLIGHT_PIN, 0);
+
+    bus = new Arduino_ESP32SPI(
+        HW_DISPLAY_DC_PIN, HW_DISPLAY_CS_PIN, HW_DISPLAY_SCK_PIN,
+        HW_DISPLAY_MOSI_PIN, HW_DISPLAY_MISO_PIN);
+
+    gfx_device = new Arduino_ST7789(
+        bus, HW_DISPLAY_RESET_PIN, HW_DISPLAY_ROTATION_DEG, HW_DISPLAY_IPS,
+        HW_DISPLAY_WIDTH_PX, HW_DISPLAY_HEIGHT_PX);
+#else
     bus = new Arduino_ESP32QSPI(
         HW_DISPLAY_CS_PIN, HW_DISPLAY_SCK_PIN, HW_DISPLAY_D0_PIN, 
         HW_DISPLAY_D1_PIN, HW_DISPLAY_D2_PIN, HW_DISPLAY_D3_PIN);
@@ -19,6 +32,7 @@ void DisplayManager::init() {
     gfx_device = new Arduino_CO5300(
         bus, HW_DISPLAY_RESET_PIN, HW_DISPLAY_ROTATION_DEG, HW_DISPLAY_WIDTH_PX, HW_DISPLAY_HEIGHT_PX,
         HW_DISPLAY_COLOR_ORDER, HW_DISPLAY_OFFSET_X_PX, HW_DISPLAY_IPS_INVERT_X, HW_DISPLAY_IPS_INVERT_Y);
+#endif
 
     
     if (!gfx_device->begin()) {
@@ -26,6 +40,9 @@ void DisplayManager::init() {
     }
     
     gfx_device->fillScreen(RGB565_BLACK);
+#if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
+    ledcWrite(HW_DISPLAY_BACKLIGHT_PIN, (1 << HW_DISPLAY_BACKLIGHT_PWM_BITS) - 1);
+#endif
     
     // Initialize LVGL
     lv_init();
@@ -176,8 +193,14 @@ void DisplayManager::set_brightness(float brightness) {
     if (brightness < 0.0f) brightness = 0.0f;
     if (brightness > 1.0f) brightness = 1.0f;
     
+#if defined(BOARD_WAVESHARE_ESP32S3_TOUCH_LCD_2)
+    // ST7789 has no brightness command; drive the backlight with PWM
+    const uint32_t max_duty = (1u << HW_DISPLAY_BACKLIGHT_PWM_BITS) - 1;
+    ledcWrite(HW_DISPLAY_BACKLIGHT_PIN, (uint32_t)(brightness * max_duty));
+#else
     // Cast to CO5300 and call setBrightness with 8-bit value
     Arduino_CO5300* display = static_cast<Arduino_CO5300*>(gfx_device);
     uint8_t brightness_value = (uint8_t)(brightness * 255.0f);
     display->setBrightness(brightness_value);
+#endif
 }

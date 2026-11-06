@@ -40,7 +40,11 @@
  * - LV_STDLIB_RTTHREAD:    RT-Thread implementation
  * - LV_STDLIB_CUSTOM:      Implement the functions externally
  */
+#if defined(ARDUINO_ARCH_ESP32) && defined(BOARD_HAS_PSRAM)
+#define LV_USE_STDLIB_MALLOC    LV_STDLIB_CUSTOM   /* PSRAM allocator: src/ui/lv_mem_psram.cpp */
+#else
 #define LV_USE_STDLIB_MALLOC    LV_STDLIB_CLIB
+#endif
 
 /** Possible values
  * - LV_STDLIB_BUILTIN:     LVGL's built in implementation
@@ -588,20 +592,20 @@
 #define LV_FONT_MONTSERRAT_12 0
 #define LV_FONT_MONTSERRAT_14 1
 #define LV_FONT_MONTSERRAT_16 1
-#define LV_FONT_MONTSERRAT_18 0
-#define LV_FONT_MONTSERRAT_20 0
-#define LV_FONT_MONTSERRAT_22 0
+#define LV_FONT_MONTSERRAT_18 1
+#define LV_FONT_MONTSERRAT_20 1
+#define LV_FONT_MONTSERRAT_22 1
 #define LV_FONT_MONTSERRAT_24 1
-#define LV_FONT_MONTSERRAT_26 0
+#define LV_FONT_MONTSERRAT_26 1
 #define LV_FONT_MONTSERRAT_28 1
 #define LV_FONT_MONTSERRAT_30 0
 #define LV_FONT_MONTSERRAT_32 1
 #define LV_FONT_MONTSERRAT_34 0
 #define LV_FONT_MONTSERRAT_36 1
 #define LV_FONT_MONTSERRAT_38 0
-#define LV_FONT_MONTSERRAT_40 0
+#define LV_FONT_MONTSERRAT_40 1
 #define LV_FONT_MONTSERRAT_42 0
-#define LV_FONT_MONTSERRAT_44 0
+#define LV_FONT_MONTSERRAT_44 1
 #define LV_FONT_MONTSERRAT_46 0
 #define LV_FONT_MONTSERRAT_48 1
 

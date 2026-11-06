@@ -7,6 +7,10 @@
 
 void Grinder::init(int pin) {
     motor_pin = pin;
+    // SAFETY: make sure the output is LOW (relay off) and pulled down before RMT takes over
+    pinMode(motor_pin, OUTPUT);
+    digitalWrite(motor_pin, LOW);
+    gpio_pulldown_en((gpio_num_t)motor_pin);
     grinding = false;
     pulse_active = false;
     rmt_initialized = false;
@@ -30,6 +34,15 @@ void Grinder::init(int pin) {
         .mem_block_symbols = 64,
         .trans_queue_depth = 4,
     };
+
+#if HW_GRINDER_MAX_CONTINUOUS_ON_MS > 0
+    esp_timer_create_args_t timer_args = {};
+    timer_args.callback = &Grinder::safety_timer_cb;
+    timer_args.arg = this;
+    timer_args.dispatch_method = ESP_TIMER_TASK;
+    timer_args.name = "grinder_safety";
+    esp_timer_create(&timer_args, &safety_timer);
+#endif
     
     if (rmt_new_tx_channel(&tx_chan_config, &rmt_channel) == ESP_OK) {
         rmt_enable(rmt_channel);
@@ -80,6 +93,8 @@ void Grinder::start() {
     
     rmt_transmit(rmt_channel, current_encoder, continuous_data, sizeof(continuous_data), &tx_config);
     grinding = true;
+    safety_tripped = false;
+    arm_safety_timer();
     emit_background_change(true);
 }
 
@@ -93,6 +108,8 @@ void Grinder::stop() {
     return;
 #endif
     if (!initialized || !rmt_initialized) return;
+
+    disarm_safety_timer();
     
     // Stop RMT transmission (works for both infinite loop and finite pulses)
     rmt_disable(rmt_channel);
@@ -239,4 +256,32 @@ void Grinder::emit_background_change(bool active) {
         
         LOG_BLE("[Grinder] Background change: %s\n", active ? "ACTIVE" : "INACTIVE");
     }
+}
+
+void Grinder::arm_safety_timer() {
+#if HW_GRINDER_MAX_CONTINUOUS_ON_MS > 0
+    if (!safety_timer) return;
+    esp_timer_stop(safety_timer);
+    esp_timer_start_once(safety_timer, (uint64_t)HW_GRINDER_MAX_CONTINUOUS_ON_MS * 1000ULL);
+#endif
+}
+
+void Grinder::disarm_safety_timer() {
+#if HW_GRINDER_MAX_CONTINUOUS_ON_MS > 0
+    if (safety_timer) esp_timer_stop(safety_timer);
+#endif
+}
+
+// Runs in the esp_timer task if the motor has been on continuously for longer than
+// HW_GRINDER_MAX_CONTINUOUS_ON_MS. Only touches the RMT channel (forces output idle/LOW);
+// encoder cleanup happens on the next start()/stop() call from the owning task.
+void Grinder::safety_timer_cb(void* arg) {
+    Grinder* self = static_cast<Grinder*>(arg);
+    if (!self || !self->rmt_initialized) return;
+    rmt_disable(self->rmt_channel);
+    rmt_enable(self->rmt_channel);
+    self->safety_tripped = true;
+    self->grinding = false;
+    self->pulse_active = false;
+    LOG_BLE("[Grinder] SAFETY: max continuous on-time reached, motor output forced OFF\n");
 }
