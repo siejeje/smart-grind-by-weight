@@ -80,6 +80,8 @@ flowchart LR
 
 If you want to modify the code or contribute to development, see **[DEVELOPMENT.md](docs/DEVELOPMENT.md)** for build instructions.
 
+**Lelit William PL72 port:** firmware, wiring and notes for the Waveshare ESP32-S3-Touch-LCD-2 (240×320 LCD) build are in **[docs/LELIT_PL72_LCD2.md](docs/LELIT_PL72_LCD2.md)**.
+
 **Design Files:** The complete Fusion 360 design is available at `3d_files/smart-grind-by-weight. Eureka Mignon.f3z` for modification and adaptation to other grinder models.
 
 ---
